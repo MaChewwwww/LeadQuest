@@ -1,65 +1,161 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useGameStore } from "@/store/useGameStore";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+export default function OnboardingPage() {
+  const router = useRouter();
+  const { gameStartTime, isSubmitted, startGame } = useGameStore();
+  const [playerName, setPlayerName] = useState("");
+  const [groupName, setGroupName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Auto-redirect if game is already in progress
+  useEffect(() => {
+    if (mounted && gameStartTime && !isSubmitted) {
+      router.push("/play");
+    }
+  }, [mounted, gameStartTime, isSubmitted, router]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!playerName.trim() || !groupName.trim()) return;
+
+    setIsLoading(true);
+    startGame(playerName.trim(), groupName.trim());
+    router.push("/play");
+  };
+
+  if (!mounted) {
+    return (
+      <main className="flex-1 flex items-center justify-center">
+        <div className="lq-shimmer h-8 w-48 rounded-lg" />
+      </main>
+    );
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="flex-1 flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md lq-fade-in">
+        {/* Logo / Title */}
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 mb-6 lq-glow-violet">
+            <svg
+              className="w-8 h-8 text-primary"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              />
+            </svg>
+          </div>
+          <h1 className="text-4xl font-bold tracking-tight mb-2">
+            <span className="bg-gradient-to-r from-primary via-violet to-cyan bg-clip-text text-transparent">
+              LeadQuest
+            </span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-muted-foreground text-sm">
+            Leadership Simulation &bull; 6 Rounds &bull; 15 Minutes
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* Form Card */}
+        <div className="lq-glass rounded-2xl p-8 lq-glow-violet">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="playerName" className="text-sm font-medium">
+                Your Name
+              </Label>
+              <Input
+                id="playerName"
+                type="text"
+                placeholder="Enter your full name"
+                value={playerName}
+                onChange={(e) => setPlayerName(e.target.value)}
+                maxLength={100}
+                required
+                className="h-12 bg-secondary/50 border-border/50 focus:border-primary/50 transition-colors placeholder:text-muted-foreground/50"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="groupName" className="text-sm font-medium">
+                Group Number
+              </Label>
+              <Select value={groupName} onValueChange={(val) => val && setGroupName(val)} required>
+                <SelectTrigger className="h-12 bg-secondary/50 border-border/50 focus:ring-primary/50 transition-colors">
+                  <SelectValue placeholder="Select your group" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Array.from({ length: 9 }, (_, i) => i + 1).map((num) => (
+                    <SelectItem key={num} value={`Group ${num}`}>
+                      Group {num}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Button
+              type="submit"
+              disabled={isLoading || !playerName.trim() || !groupName.trim()}
+              className="w-full h-12 text-base font-semibold bg-primary hover:bg-primary/90 transition-all duration-300 hover:shadow-[0_0_30px_oklch(0.72_0.22_292_/_0.3)] cursor-pointer"
+            >
+              {isLoading ? (
+                <span className="flex items-center gap-2">
+                  <svg
+                    className="animate-spin h-4 w-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    />
+                  </svg>
+                  Starting...
+                </span>
+              ) : (
+                "Begin Quest →"
+              )}
+            </Button>
+          </form>
+
+          <p className="text-center text-xs text-muted-foreground/60 mt-6">
+            Your progress is saved locally. You can safely refresh the page.
+          </p>
         </div>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }

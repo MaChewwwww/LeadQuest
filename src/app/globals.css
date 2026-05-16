@@ -1,26 +1,215 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+  --color-emerald: oklch(0.765 0.177 163.223);
+  --color-violet: oklch(0.606 0.25 292.717);
+  --color-amber: oklch(0.82 0.18 84.429);
+  --color-rose: oklch(0.645 0.246 16.439);
+  --color-cyan: oklch(0.715 0.143 215.221);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --background: oklch(0.13 0.015 280);
+  --foreground: oklch(0.95 0.01 280);
+  --card: oklch(0.17 0.02 280);
+  --card-foreground: oklch(0.95 0.01 280);
+  --popover: oklch(0.17 0.02 280);
+  --popover-foreground: oklch(0.95 0.01 280);
+  --primary: oklch(0.72 0.22 292);
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.22 0.03 280);
+  --secondary-foreground: oklch(0.9 0.01 280);
+  --muted: oklch(0.22 0.025 280);
+  --muted-foreground: oklch(0.65 0.02 280);
+  --accent: oklch(0.28 0.04 280);
+  --accent-foreground: oklch(0.95 0.01 280);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.3 0.03 280);
+  --input: oklch(0.25 0.03 280);
+  --ring: oklch(0.72 0.22 292);
+  --chart-1: oklch(0.72 0.22 292);
+  --chart-2: oklch(0.765 0.177 163.223);
+  --chart-3: oklch(0.82 0.18 84.429);
+  --chart-4: oklch(0.715 0.143 215.221);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --radius: 0.75rem;
+  --sidebar: oklch(0.15 0.02 280);
+  --sidebar-foreground: oklch(0.95 0.01 280);
+  --sidebar-primary: oklch(0.72 0.22 292);
+  --sidebar-primary-foreground: oklch(0.98 0 0);
+  --sidebar-accent: oklch(0.22 0.03 280);
+  --sidebar-accent-foreground: oklch(0.95 0.01 280);
+  --sidebar-border: oklch(0.3 0.03 280);
+  --sidebar-ring: oklch(0.72 0.22 292);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ---- LeadQuest Custom Styles ---- */
+
+/* Animated gradient background */
+.lq-bg-gradient {
+  background: 
+    radial-gradient(ellipse at 20% 50%, oklch(0.25 0.12 292 / 0.3), transparent 50%),
+    radial-gradient(ellipse at 80% 20%, oklch(0.2 0.1 220 / 0.2), transparent 50%),
+    radial-gradient(ellipse at 50% 80%, oklch(0.18 0.08 163 / 0.15), transparent 50%),
+    oklch(0.13 0.015 280);
+}
+
+/* Glassmorphism card */
+.lq-glass {
+  background: oklch(0.17 0.025 280 / 0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid oklch(1 0 0 / 0.08);
+}
+
+/* Glow effects */
+.lq-glow-violet {
+  box-shadow: 
+    0 0 20px oklch(0.72 0.22 292 / 0.15),
+    0 0 60px oklch(0.72 0.22 292 / 0.05);
+}
+
+.lq-glow-emerald {
+  box-shadow: 
+    0 0 20px oklch(0.765 0.177 163 / 0.15),
+    0 0 60px oklch(0.765 0.177 163 / 0.05);
+}
+
+/* Pulse animation for timer */
+@keyframes lq-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.lq-timer-critical {
+  animation: lq-pulse 1s ease-in-out infinite;
+  color: oklch(0.645 0.246 16.439);
+}
+
+/* Shimmer effect for loading states */
+@keyframes lq-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.lq-shimmer {
+  background: linear-gradient(
+    90deg,
+    oklch(0.25 0.03 280) 25%,
+    oklch(0.35 0.04 280) 50%,
+    oklch(0.25 0.03 280) 75%
+  );
+  background-size: 200% 100%;
+  animation: lq-shimmer 2s ease-in-out infinite;
+}
+
+/* Option button hover glow */
+.lq-option-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lq-option-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px oklch(0.72 0.22 292 / 0.2);
+}
+
+.lq-option-btn.selected {
+  background: oklch(0.72 0.22 292 / 0.15);
+  border-color: oklch(0.72 0.22 292);
+  box-shadow: 0 0 20px oklch(0.72 0.22 292 / 0.2);
+}
+
+/* Fade-in animation */
+@keyframes lq-fade-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.lq-fade-in {
+  animation: lq-fade-in 0.5s ease-out forwards;
+}
+
+/* Staggered children animation */
+.lq-stagger > * {
+  opacity: 0;
+  animation: lq-fade-in 0.4s ease-out forwards;
+}
+
+.lq-stagger > *:nth-child(1) { animation-delay: 0.05s; }
+.lq-stagger > *:nth-child(2) { animation-delay: 0.1s; }
+.lq-stagger > *:nth-child(3) { animation-delay: 0.15s; }
+.lq-stagger > *:nth-child(4) { animation-delay: 0.2s; }
+.lq-stagger > *:nth-child(5) { animation-delay: 0.25s; }
+.lq-stagger > *:nth-child(6) { animation-delay: 0.3s; }
+
+/* Score pop animation */
+@keyframes lq-score-pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.lq-score-pop {
+  animation: lq-score-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Progress bar fill */
+.lq-progress-fill {
+  transition: width 1s linear;
 }

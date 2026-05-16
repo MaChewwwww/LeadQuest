@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LeadQuest
 
-## Getting Started
+LeadQuest is an educational web-game and leadership simulation built for live classroom presentations. It features a 6-round interactive scenario where students vote on leadership decisions, and a real-time presenter dashboard for analyzing class responses and revealing a final leaderboard.
 
-First, run the development server:
+## 🚀 Tech Stack
 
+- **Framework**: Next.js 15 (App Router)
+- **Styling**: Tailwind CSS + Shadcn UI
+- **State Management**: Zustand (with local storage persistence)
+- **Database**: Supabase (PostgreSQL)
+- **ORM**: Drizzle ORM
+- **Charts**: Recharts
+
+## 🎮 Features
+
+1. **Onboarding (`/`)**: A seamless entry point for students to input their name and group.
+2. **Gameplay (`/play`)**: A 15-minute timed simulation guiding students through 6 leadership scenarios. Progress is saved locally to survive accidental page refreshes.
+3. **Presenter Dashboard (`/admin`)**: A secure dashboard gated by a passkey. Features real-time polling to view submission counts, visual bar charts for choice distributions, and an automated final leaderboard.
+
+## 🛠️ Getting Started
+
+### 1. Install Dependencies
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Environment Variables
+Create a `.env.local` file in the root of the project and add the following variables:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```env
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_supabase_anon_key
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Database Connection (Drizzle ORM)
+DATABASE_URL="postgresql://postgres.[project-ref]:[password]@aws-0-REGION.pooler.supabase.com:6543/postgres"
 
-## Learn More
+# Presenter Dashboard Passkey
+ADMIN_PASSKEY=LeadQuest123!!!
+```
+*(Make sure to URL-encode your database password if it contains special characters).*
 
-To learn more about Next.js, take a look at the following resources:
+### 3. Initialize the Database
+Run the reset script to connect to your Supabase PostgreSQL instance, drop any existing tables, and build the `submissions` schema from scratch:
+```bash
+npm run db:reset
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 4. Start the Development Server
+```bash
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Open your browser and navigate to:
+- **[http://localhost:3000](http://localhost:3000)** to play the game as a student.
+- **[http://localhost:3000/admin](http://localhost:3000/admin)** to open the presenter dashboard.
 
-## Deploy on Vercel
+## 📝 Customizing the Curriculum
+To update the 6 leadership scenarios, edit the `questions` array inside:
+`src/data/questions.ts`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Each option is assigned a point value which ultimately decides the student's final leaderboard ranking.
