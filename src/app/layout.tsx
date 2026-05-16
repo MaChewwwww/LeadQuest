@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Outfit, Rajdhani } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const rajdhani = Rajdhani({
+  weight: ["500", "600", "700"],
+  variable: "--font-rajdhani",
   subsets: ["latin"],
 });
 
@@ -26,9 +27,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${outfit.variable} ${rajdhani.variable} h-full antialiased dark`}
     >
-      <body className="min-h-full flex flex-col lq-bg-gradient">{children}</body>
+      <body className="min-h-full flex flex-col font-sans lq-bg-gradient text-foreground bg-background">{children}</body>
     </html>
   );
 }

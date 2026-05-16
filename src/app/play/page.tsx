@@ -121,11 +121,11 @@ export default function PlayPage() {
     return (
       <main className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-lg text-center lq-fade-in">
-          <div className="lq-glass rounded-2xl p-10 lq-glow-emerald">
+          <div className="lq-glass rounded-2xl p-10 lq-glow-secondary">
             {/* Trophy icon */}
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-emerald/10 border border-emerald/20 mb-6">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-chart-2/10 border border-chart-2/20 mb-6 shadow-[0_0_20px_oklch(0.72_0.15_220_/_0.2)]">
               <svg
-                className="w-10 h-10 text-emerald"
+                className="w-10 h-10 text-chart-2"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -139,13 +139,13 @@ export default function PlayPage() {
               </svg>
             </div>
 
-            <h1 className="text-3xl font-bold mb-2">Quest Complete!</h1>
-            <p className="text-muted-foreground mb-8">
-              Great work, {playerName}!
+            <h1 className="text-4xl font-heading font-bold mb-2">Quest Complete!</h1>
+            <p className="text-muted-foreground mb-8 text-lg">
+              Great work, <span className="text-foreground font-medium">{playerName}</span>!
             </p>
 
             <div className="lq-score-pop">
-              <div className="text-6xl font-bold bg-gradient-to-r from-emerald via-cyan to-primary bg-clip-text text-transparent mb-2">
+              <div className="text-7xl font-heading font-bold bg-gradient-to-r from-chart-2 to-primary bg-clip-text text-transparent mb-2 drop-shadow-sm">
                 {totalScore}
               </div>
               <p className="text-sm text-muted-foreground">
@@ -221,7 +221,7 @@ export default function PlayPage() {
         </div>
         <div className="h-1.5 bg-secondary/50 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-primary to-violet rounded-full lq-progress-fill"
+            className="h-full bg-gradient-to-r from-chart-2 to-primary rounded-full lq-progress-fill"
             style={{ width: `${(currentRound - 1) / TOTAL_ROUNDS * 100}%` }}
           />
         </div>
@@ -232,15 +232,15 @@ export default function PlayPage() {
         <div className="flex-1 flex flex-col" key={currentRound}>
           {/* Scenario */}
           <div className="lq-glass rounded-2xl p-6 mb-6 lq-fade-in">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-sm font-bold text-primary">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center text-lg font-heading font-bold text-primary shadow-[0_0_15px_oklch(0.65_0.22_250_/_0.2)]">
                 {currentRound}
               </div>
-              <h2 className="text-sm font-medium text-muted-foreground">
+              <h2 className="text-base font-heading font-medium text-muted-foreground tracking-wide">
                 Leadership Scenario
               </h2>
             </div>
-            <p className="text-lg leading-relaxed">{currentQuestion.scenario}</p>
+            <p className="text-[1.1rem] leading-relaxed text-foreground/90 font-medium">{currentQuestion.scenario}</p>
           </div>
 
           {/* Options */}
@@ -248,16 +248,16 @@ export default function PlayPage() {
             {currentQuestion.options.map((option) => {
               const isSelected = selectedOption === option.label;
               const optionColors: Record<string, string> = {
-                A: "border-violet/30 hover:border-violet/60",
-                B: "border-emerald/30 hover:border-emerald/60",
-                C: "border-amber/30 hover:border-amber/60",
-                D: "border-cyan/30 hover:border-cyan/60",
+                A: "border-blue-500/30 hover:border-blue-500/60",
+                B: "border-sky-500/30 hover:border-sky-500/60",
+                C: "border-indigo-500/30 hover:border-indigo-500/60",
+                D: "border-cyan-500/30 hover:border-cyan-500/60",
               };
               const labelColors: Record<string, string> = {
-                A: "bg-violet/10 text-violet",
-                B: "bg-emerald/10 text-emerald",
-                C: "bg-amber/10 text-amber",
-                D: "bg-cyan/10 text-cyan",
+                A: "bg-blue-500/10 text-blue-400",
+                B: "bg-sky-500/10 text-sky-400",
+                C: "bg-indigo-500/10 text-indigo-400",
+                D: "bg-cyan-500/10 text-cyan-400",
               };
 
               return (
@@ -294,11 +294,11 @@ export default function PlayPage() {
           {showFeedback && (
             <div className="mt-6 text-center lq-score-pop">
               <div
-                className={`text-3xl font-bold ${
+                className={`text-4xl font-heading font-bold tracking-wide drop-shadow-sm ${
                   feedbackScore > 0
-                    ? "text-emerald"
+                    ? "text-chart-2"
                     : feedbackScore < 0
-                    ? "text-rose"
+                    ? "text-destructive"
                     : "text-muted-foreground"
                 }`}
               >

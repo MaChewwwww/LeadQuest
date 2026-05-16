@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -64,9 +64,30 @@ export default function AdminPage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<string>("All");
 
-  const filteredSubmissions = submissions.filter(
-    (sub) => selectedGroup === "All" || sub.groupName === selectedGroup
-  );
+  const filteredSubmissions =
+    selectedGroup === "All"
+      ? submissions
+      : submissions.filter((s) => s.groupName === selectedGroup);
+
+  // Compute group leaderboard
+  const groupLeaderboard = useMemo(() => {
+    const stats: Record<string, { totalScore: number; count: number }> = {};
+    filteredSubmissions.forEach((sub) => {
+      if (!stats[sub.groupName]) {
+        stats[sub.groupName] = { totalScore: 0, count: 0 };
+      }
+      stats[sub.groupName].totalScore += sub.totalScore;
+      stats[sub.groupName].count += 1;
+    });
+
+    return Object.entries(stats)
+      .map(([groupName, data]) => ({
+        groupName,
+        averageScore: Math.round(data.totalScore / data.count),
+        players: data.count,
+      }))
+      .sort((a, b) => b.averageScore - a.averageScore);
+  }, [filteredSubmissions]);
 
   // Fetch submissions
   const fetchSubmissions = useCallback(async () => {
@@ -231,8 +252,8 @@ export default function AdminPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6 lq-fade-in">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <span className="bg-gradient-to-r from-primary to-violet bg-clip-text text-transparent">
+          <h1 className="text-3xl font-heading font-bold flex items-center gap-2">
+            <span className="bg-gradient-to-r from-primary to-chart-2 bg-clip-text text-transparent">
               LeadQuest
             </span>
             <Badge variant="secondary" className="text-xs">
@@ -364,13 +385,13 @@ export default function AdminPage() {
 
                 {/* Question Info */}
                 {currentQuestion && (
-                  <div className="lq-glass rounded-2xl p-6 lq-fade-in">
-                    <h3 className="text-lg font-medium mb-4">{currentQuestion.scenario}</h3>
-                    <div className="grid sm:grid-cols-2 gap-3">
+                  <div className="lq-glass rounded-2xl p-6 lq-fade-in border-border/60 shadow-lg shadow-black/20">
+                    <h3 className="text-xl font-heading font-semibold mb-4 text-foreground/90">{currentQuestion.scenario}</h3>
+                    <div className="grid sm:grid-cols-2 gap-4">
                       {currentQuestion.options.map(opt => (
-                        <div key={opt.label} className="bg-secondary/40 p-3 rounded-lg flex items-start gap-3">
-                          <Badge variant="outline" className="shrink-0">{opt.label}</Badge>
-                          <span className="text-sm text-muted-foreground">
+                        <div key={opt.label} className="bg-secondary/40 p-4 rounded-xl flex items-start gap-4 border border-border/40 hover:border-border/80 transition-colors">
+                          <Badge variant="default" className="shrink-0 bg-primary/20 text-primary hover:bg-primary/30 border-none">{opt.label}</Badge>
+                          <span className="text-[15px] leading-relaxed text-muted-foreground">
                             {opt.text}
                             {isRevealed && (
                               <span className="text-foreground ml-2 font-medium">
@@ -410,23 +431,26 @@ export default function AdminPage() {
                             >
                               <CartesianGrid
                                 strokeDasharray="3 3"
-                                stroke="oklch(0.3 0.03 280)"
+                                stroke="oklch(0.28 0.04 250)"
                               />
                               <XAxis
                                 dataKey="label"
-                                tick={{ fill: "oklch(0.65 0.02 280)", fontSize: 13 }}
+                                tick={{ fill: "oklch(0.75 0.02 250)", fontSize: 13 }}
                               />
                               <YAxis
                                 allowDecimals={false}
-                                tick={{ fill: "oklch(0.65 0.02 280)", fontSize: 13 }}
+                                tick={{ fill: "oklch(0.75 0.02 250)", fontSize: 13 }}
                               />
                               <Tooltip
+                                cursor={{ fill: "oklch(0.2 0.05 250 / 0.4)" }}
                                 contentStyle={{
-                                  background: "oklch(0.2 0.025 280)",
-                                  border: "1px solid oklch(0.3 0.03 280)",
+                                  background: "oklch(0.16 0.03 250)",
+                                  border: "1px solid oklch(0.28 0.04 250)",
                                   borderRadius: "12px",
-                                  color: "oklch(0.95 0.01 280)",
+                                  color: "oklch(0.98 0.01 250)",
+                                  boxShadow: "0 8px 30px rgba(0,0,0,0.3)",
                                 }}
+                                itemStyle={{ fontWeight: 600, color: "var(--primary)" }}
                               />
                               <Bar dataKey="count" radius={[8, 8, 0, 0]} maxBarSize={60}>
                                 {getChoiceDistribution(round).map((_, index) => (
@@ -461,23 +485,26 @@ export default function AdminPage() {
                                       >
                                         <CartesianGrid
                                           strokeDasharray="3 3"
-                                          stroke="oklch(0.3 0.03 280)"
+                                          stroke="oklch(0.28 0.04 250)"
                                         />
                                         <XAxis
                                           dataKey="label"
-                                          tick={{ fill: "oklch(0.65 0.02 280)", fontSize: 11 }}
+                                          tick={{ fill: "oklch(0.75 0.02 250)", fontSize: 11 }}
                                         />
                                         <YAxis
                                           allowDecimals={false}
-                                          tick={{ fill: "oklch(0.65 0.02 280)", fontSize: 11 }}
+                                          tick={{ fill: "oklch(0.75 0.02 250)", fontSize: 11 }}
                                         />
                                         <Tooltip
+                                          cursor={{ fill: "oklch(0.2 0.05 250 / 0.4)" }}
                                           contentStyle={{
-                                            background: "oklch(0.2 0.025 280)",
-                                            border: "1px solid oklch(0.3 0.03 280)",
+                                            background: "oklch(0.16 0.03 250)",
+                                            border: "1px solid oklch(0.28 0.04 250)",
                                             borderRadius: "12px",
-                                            color: "oklch(0.95 0.01 280)",
+                                            color: "oklch(0.98 0.01 250)",
+                                            boxShadow: "0 8px 30px rgba(0,0,0,0.3)",
                                           }}
+                                          itemStyle={{ fontWeight: 600, color: "var(--primary)" }}
                                         />
                                         <Bar dataKey="count" radius={[6, 6, 0, 0]} maxBarSize={40}>
                                           {chartData.map((_, index) => (
@@ -519,10 +546,12 @@ export default function AdminPage() {
 
         {/* Leaderboard Tab */}
         <TabsContent value="leaderboard">
-          <div className="lq-glass rounded-2xl p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold">🏆 Final Leaderboard</h2>
-              <Badge variant="outline" className="text-sm">
+          <div className="lq-glass rounded-2xl p-8 border-border/60 shadow-xl shadow-black/20">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl font-heading font-bold flex items-center gap-3">
+                <span className="text-3xl">🏆</span> Final Leaderboard
+              </h2>
+              <Badge variant="secondary" className="text-sm px-4 py-1.5 font-medium bg-primary/10 text-primary border-primary/20">
                 {filteredSubmissions.length} Players
               </Badge>
             </div>
@@ -535,61 +564,130 @@ export default function AdminPage() {
                 </p>
               </div>
             ) : (
-              <div className="rounded-xl border border-border/50 overflow-hidden">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="border-border/50 hover:bg-transparent">
-                      <TableHead className="w-16 text-center font-semibold">
-                        Rank
-                      </TableHead>
-                      <TableHead className="font-semibold">Name</TableHead>
-                      <TableHead className="font-semibold">Group</TableHead>
-                      <TableHead className="text-right font-semibold">
-                        Score
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredSubmissions.map((sub, index) => (
-                      <TableRow
-                        key={sub.id}
-                        className="border-border/30 hover:bg-secondary/20 transition-colors"
-                      >
-                        <TableCell className="text-center">
-                          {index === 0 ? (
-                            <span className="text-lg">🥇</span>
-                          ) : index === 1 ? (
-                            <span className="text-lg">🥈</span>
-                          ) : index === 2 ? (
-                            <span className="text-lg">🥉</span>
-                          ) : (
-                            <span className="text-muted-foreground font-mono text-sm">
-                              {index + 1}
-                            </span>
-                          )}
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          {sub.playerName}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="secondary" className="text-xs">
-                            {sub.groupName}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <span
-                            className={`font-bold font-mono ${
-                              index < 3 ? "text-emerald" : ""
-                            }`}
+              <Tabs defaultValue="individual" className="w-full">
+                <div className="flex justify-center mb-6">
+                  <TabsList className="grid w-[400px] grid-cols-2">
+                    <TabsTrigger value="individual">Individual Ranking</TabsTrigger>
+                    <TabsTrigger value="group">Group Averages</TabsTrigger>
+                  </TabsList>
+                </div>
+
+                <TabsContent value="individual">
+                  <div className="rounded-xl border border-border/50 overflow-hidden">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="border-border/50 hover:bg-transparent">
+                          <TableHead className="w-16 text-center font-semibold">
+                            Rank
+                          </TableHead>
+                          <TableHead className="font-semibold">Name</TableHead>
+                          <TableHead className="font-semibold">Group</TableHead>
+                          <TableHead className="text-right font-semibold">
+                            Score
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredSubmissions.map((sub, index) => (
+                          <TableRow
+                            key={sub.id}
+                            className="border-border/30 hover:bg-secondary/20 transition-colors"
                           >
-                            {sub.totalScore}
-                          </span>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                            <TableCell className="text-center">
+                              {index === 0 ? (
+                                <span className="text-lg">🥇</span>
+                              ) : index === 1 ? (
+                                <span className="text-lg">🥈</span>
+                              ) : index === 2 ? (
+                                <span className="text-lg">🥉</span>
+                              ) : (
+                                <span className="text-muted-foreground font-mono text-sm">
+                                  {index + 1}
+                                </span>
+                              )}
+                            </TableCell>
+                            <TableCell className="font-medium">
+                              {sub.playerName}
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="secondary" className="text-xs">
+                                {sub.groupName}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <span
+                                className={`font-bold font-mono ${
+                                  index < 3 ? "text-primary" : ""
+                                }`}
+                              >
+                                {sub.totalScore}
+                              </span>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="group">
+                  <div className="rounded-xl border border-border/50 overflow-hidden">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="border-border/50 hover:bg-transparent">
+                          <TableHead className="w-16 text-center font-semibold">
+                            Rank
+                          </TableHead>
+                          <TableHead className="font-semibold">Group</TableHead>
+                          <TableHead className="font-semibold">Players</TableHead>
+                          <TableHead className="text-right font-semibold">
+                            Average Score
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {groupLeaderboard.map((group, index) => (
+                          <TableRow
+                            key={group.groupName}
+                            className="border-border/30 hover:bg-secondary/20 transition-colors"
+                          >
+                            <TableCell className="text-center">
+                              {index === 0 ? (
+                                <span className="text-lg">🥇</span>
+                              ) : index === 1 ? (
+                                <span className="text-lg">🥈</span>
+                              ) : index === 2 ? (
+                                <span className="text-lg">🥉</span>
+                              ) : (
+                                <span className="text-muted-foreground font-mono text-sm">
+                                  {index + 1}
+                                </span>
+                              )}
+                            </TableCell>
+                            <TableCell className="font-medium">
+                              {group.groupName}
+                            </TableCell>
+                            <TableCell>
+                              <span className="text-muted-foreground text-sm">
+                                {group.players}
+                              </span>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <span
+                                className={`font-bold font-mono ${
+                                  index < 3 ? "text-primary" : ""
+                                }`}
+                              >
+                                {group.averageScore}
+                              </span>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </TabsContent>
+              </Tabs>
             )}
           </div>
         </TabsContent>

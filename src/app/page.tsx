@@ -55,7 +55,7 @@ export default function OnboardingPage() {
       <div className="w-full max-w-md lq-fade-in">
         {/* Logo / Title */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 mb-6 lq-glow-violet">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 border border-primary/40 shadow-[0_0_20px_oklch(0.65_0.22_250_/_0.2)] mb-6">
             <svg
               className="w-8 h-8 text-primary"
               fill="none"
@@ -70,8 +70,8 @@ export default function OnboardingPage() {
               />
             </svg>
           </div>
-          <h1 className="text-4xl font-bold tracking-tight mb-2">
-            <span className="bg-gradient-to-r from-primary via-violet to-cyan bg-clip-text text-transparent">
+          <h1 className="text-5xl font-heading font-bold tracking-tight mb-2">
+            <span className="bg-gradient-to-r from-primary to-chart-2 bg-clip-text text-transparent drop-shadow-sm">
               LeadQuest
             </span>
           </h1>
@@ -81,7 +81,7 @@ export default function OnboardingPage() {
         </div>
 
         {/* Form Card */}
-        <div className="lq-glass rounded-2xl p-8 lq-glow-violet">
+        <div className="lq-glass rounded-2xl p-8 lq-glow-primary border border-primary/20">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="playerName" className="text-sm font-medium">
@@ -120,7 +120,7 @@ export default function OnboardingPage() {
             <Button
               type="submit"
               disabled={isLoading || !playerName.trim() || !groupName.trim()}
-              className="w-full h-12 text-base font-semibold bg-primary hover:bg-primary/90 transition-all duration-300 hover:shadow-[0_0_30px_oklch(0.72_0.22_292_/_0.3)] cursor-pointer"
+              className="w-full h-12 text-base font-semibold bg-primary hover:bg-primary/90 transition-all duration-300 hover:shadow-[0_0_30px_oklch(0.65_0.22_250_/_0.3)] cursor-pointer text-primary-foreground font-heading tracking-wide"
             >
               {isLoading ? (
                 <span className="flex items-center gap-2">
