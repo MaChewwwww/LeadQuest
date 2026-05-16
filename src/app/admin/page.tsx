@@ -8,6 +8,13 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
   Table,
   TableBody,
   TableCell,
@@ -43,6 +50,7 @@ interface Submission {
   roundScores: Record<string, number>;
   completed: boolean;
   submittedAt: string;
+  timeTakenSeconds?: number;
 }
 
 const TOTAL_ROUNDS = 6;
@@ -190,11 +198,11 @@ export default function AdminPage() {
   if (!isAuthenticated) {
     return (
       <main className="flex-1 flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-sm lq-fade-in">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 mb-4">
+        <Card className="w-full max-w-md lq-fade-in lq-glass lq-glow-primary border-primary/20">
+          <CardHeader className="text-center pb-2">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 border border-primary/40 shadow-[0_0_20px_oklch(0.65_0.22_250_/_0.2)] mb-6 mx-auto">
               <svg
-                className="w-7 h-7 text-primary"
+                className="w-8 h-8 text-primary"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -207,41 +215,34 @@ export default function AdminPage() {
                 />
               </svg>
             </div>
-            <h1 className="text-2xl font-bold mb-1">Presenter Dashboard</h1>
-            <p className="text-sm text-muted-foreground">
-              Enter the admin passkey to continue
-            </p>
-          </div>
+            <CardTitle className="text-3xl font-heading font-bold mb-2">Admin Access</CardTitle>
+            <CardDescription>Enter the presenter passkey to view real-time results.</CardDescription>
+          </CardHeader>
 
-          <div className="lq-glass rounded-2xl p-6">
-            <form onSubmit={handleVerify} className="space-y-4">
+          <CardContent>
+            <form onSubmit={handleVerify} className="space-y-6 pt-4">
               <div className="space-y-2">
-                <Label htmlFor="passkey" className="text-sm">
-                  Passkey
-                </Label>
                 <Input
-                  id="passkey"
                   type="password"
-                  placeholder="Enter admin passkey"
+                  placeholder="Enter passkey"
                   value={passkey}
                   onChange={(e) => setPasskey(e.target.value)}
-                  className="h-11 bg-secondary/50 border-border/50"
+                  className="h-12 bg-secondary/50 border-border/50 focus:border-primary/50 text-center text-lg tracking-widest"
                   autoFocus
                 />
+                {error && <p className="text-destructive text-sm text-center font-medium mt-2">{error}</p>}
               </div>
-              {error && (
-                <p className="text-sm text-destructive">{error}</p>
-              )}
+
               <Button
                 type="submit"
-                disabled={isVerifying || !passkey.trim()}
-                className="w-full h-11 font-semibold bg-primary hover:bg-primary/90 cursor-pointer"
+                disabled={isVerifying || !passkey}
+                className="w-full h-12 text-base font-semibold bg-primary hover:bg-primary/90 transition-all font-heading tracking-wide"
               >
-                {isVerifying ? "Verifying..." : "Unlock Dashboard"}
+                {isVerifying ? "Verifying..." : "Access Dashboard →"}
               </Button>
             </form>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </main>
     );
   }
@@ -385,24 +386,28 @@ export default function AdminPage() {
 
                 {/* Question Info */}
                 {currentQuestion && (
-                  <div className="lq-glass rounded-2xl p-6 lq-fade-in border-border/60 shadow-lg shadow-black/20">
-                    <h3 className="text-xl font-heading font-semibold mb-4 text-foreground/90">{currentQuestion.scenario}</h3>
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      {currentQuestion.options.map(opt => (
-                        <div key={opt.label} className="bg-secondary/40 p-4 rounded-xl flex items-start gap-4 border border-border/40 hover:border-border/80 transition-colors">
-                          <Badge variant="default" className="shrink-0 bg-primary/20 text-primary hover:bg-primary/30 border-none">{opt.label}</Badge>
-                          <span className="text-[15px] leading-relaxed text-muted-foreground">
-                            {opt.text}
-                            {isRevealed && (
-                              <span className="text-foreground ml-2 font-medium">
-                                ({opt.score} pts)
-                              </span>
-                            )}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  <Card className="lq-glass border-border/60 shadow-lg shadow-black/20 lq-fade-in">
+                    <CardHeader>
+                      <CardTitle className="text-xl font-heading font-semibold text-foreground/90">{currentQuestion.scenario}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        {currentQuestion.options.map(opt => (
+                          <div key={opt.label} className="bg-secondary/40 p-4 rounded-xl flex items-start gap-4 border border-border/40 hover:border-border/80 transition-colors">
+                            <Badge variant="default" className="shrink-0 bg-primary/20 text-primary hover:bg-primary/30 border-none">{opt.label}</Badge>
+                            <span className="text-[15px] leading-relaxed text-muted-foreground">
+                              {opt.text}
+                              {isRevealed && (
+                                <span className="text-foreground ml-2 font-medium">
+                                  ({opt.score} pts)
+                                </span>
+                              )}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
                 )}
 
                 {/* Charts (revealed) */}
@@ -420,49 +425,53 @@ export default function AdminPage() {
                     ) : (
                       <div className="space-y-8">
                         {/* Overall Chart */}
-                        <div className="lq-glass rounded-2xl p-6">
-                          <h3 className="text-sm font-medium text-muted-foreground mb-4">
-                            Overall Choice Distribution
-                          </h3>
-                          <ResponsiveContainer width="100%" height={280}>
-                            <BarChart
-                              data={getChoiceDistribution(round)}
-                              margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
-                            >
-                              <CartesianGrid
-                                strokeDasharray="3 3"
-                                stroke="oklch(0.28 0.04 250)"
-                              />
-                              <XAxis
-                                dataKey="label"
-                                tick={{ fill: "oklch(0.75 0.02 250)", fontSize: 13 }}
-                              />
-                              <YAxis
-                                allowDecimals={false}
-                                tick={{ fill: "oklch(0.75 0.02 250)", fontSize: 13 }}
-                              />
-                              <Tooltip
-                                cursor={{ fill: "oklch(0.2 0.05 250 / 0.4)" }}
-                                contentStyle={{
-                                  background: "oklch(0.16 0.03 250)",
-                                  border: "1px solid oklch(0.28 0.04 250)",
-                                  borderRadius: "12px",
-                                  color: "oklch(0.98 0.01 250)",
-                                  boxShadow: "0 8px 30px rgba(0,0,0,0.3)",
-                                }}
-                                itemStyle={{ fontWeight: 600, color: "var(--primary)" }}
-                              />
-                              <Bar dataKey="count" radius={[8, 8, 0, 0]} maxBarSize={60}>
-                                {getChoiceDistribution(round).map((_, index) => (
-                                  <Cell
-                                    key={`cell-${index}`}
-                                    fill={CHART_COLORS[index % CHART_COLORS.length]}
-                                  />
-                                ))}
-                              </Bar>
-                            </BarChart>
-                          </ResponsiveContainer>
-                        </div>
+                        <Card className="lq-glass">
+                          <CardHeader className="pb-2">
+                            <CardTitle className="text-sm font-medium text-muted-foreground">
+                              Overall Choice Distribution
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <ResponsiveContainer width="100%" height={280}>
+                              <BarChart
+                                data={getChoiceDistribution(round)}
+                                margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
+                              >
+                                <CartesianGrid
+                                  strokeDasharray="3 3"
+                                  stroke="oklch(0.28 0.04 250)"
+                                />
+                                <XAxis
+                                  dataKey="label"
+                                  tick={{ fill: "oklch(0.75 0.02 250)", fontSize: 13 }}
+                                />
+                                <YAxis
+                                  allowDecimals={false}
+                                  tick={{ fill: "oklch(0.75 0.02 250)", fontSize: 13 }}
+                                />
+                                <Tooltip
+                                  cursor={{ fill: "oklch(0.2 0.05 250 / 0.4)" }}
+                                  contentStyle={{
+                                    background: "oklch(0.16 0.03 250)",
+                                    border: "1px solid oklch(0.28 0.04 250)",
+                                    borderRadius: "12px",
+                                    color: "oklch(0.98 0.01 250)",
+                                    boxShadow: "0 8px 30px rgba(0,0,0,0.3)",
+                                  }}
+                                  itemStyle={{ fontWeight: 600, color: "var(--primary)" }}
+                                />
+                                <Bar dataKey="count" radius={[8, 8, 0, 0]} maxBarSize={60}>
+                                  {getChoiceDistribution(round).map((_, index) => (
+                                    <Cell
+                                      key={`cell-${index}`}
+                                      fill={CHART_COLORS[index % CHART_COLORS.length]}
+                                    />
+                                  ))}
+                                </Bar>
+                              </BarChart>
+                            </ResponsiveContainer>
+                          </CardContent>
+                        </Card>
 
                         {/* Group Breakdown Grid */}
                         {activeGroups.length > 1 && (
@@ -474,49 +483,53 @@ export default function AdminPage() {
                               {activeGroups.map(group => {
                                 const chartData = getChoiceDistribution(round, group);
                                 return (
-                                  <div key={group} className="lq-glass rounded-2xl p-6">
-                                    <h3 className="text-sm font-medium text-foreground mb-4">
-                                      {group}
-                                    </h3>
-                                    <ResponsiveContainer width="100%" height={200}>
-                                      <BarChart
-                                        data={chartData}
-                                        margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
-                                      >
-                                        <CartesianGrid
-                                          strokeDasharray="3 3"
-                                          stroke="oklch(0.28 0.04 250)"
-                                        />
-                                        <XAxis
-                                          dataKey="label"
-                                          tick={{ fill: "oklch(0.75 0.02 250)", fontSize: 11 }}
-                                        />
-                                        <YAxis
-                                          allowDecimals={false}
-                                          tick={{ fill: "oklch(0.75 0.02 250)", fontSize: 11 }}
-                                        />
-                                        <Tooltip
-                                          cursor={{ fill: "oklch(0.2 0.05 250 / 0.4)" }}
-                                          contentStyle={{
-                                            background: "oklch(0.16 0.03 250)",
-                                            border: "1px solid oklch(0.28 0.04 250)",
-                                            borderRadius: "12px",
-                                            color: "oklch(0.98 0.01 250)",
-                                            boxShadow: "0 8px 30px rgba(0,0,0,0.3)",
-                                          }}
-                                          itemStyle={{ fontWeight: 600, color: "var(--primary)" }}
-                                        />
-                                        <Bar dataKey="count" radius={[6, 6, 0, 0]} maxBarSize={40}>
-                                          {chartData.map((_, index) => (
-                                            <Cell
-                                              key={`cell-${index}`}
-                                              fill={CHART_COLORS[index % CHART_COLORS.length]}
-                                            />
-                                          ))}
-                                        </Bar>
-                                      </BarChart>
-                                    </ResponsiveContainer>
-                                  </div>
+                                  <Card key={group} className="lq-glass">
+                                    <CardHeader className="pb-2">
+                                      <CardTitle className="text-sm font-medium text-foreground">
+                                        {group}
+                                      </CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                      <ResponsiveContainer width="100%" height={200}>
+                                        <BarChart
+                                          data={chartData}
+                                          margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
+                                        >
+                                          <CartesianGrid
+                                            strokeDasharray="3 3"
+                                            stroke="oklch(0.28 0.04 250)"
+                                          />
+                                          <XAxis
+                                            dataKey="label"
+                                            tick={{ fill: "oklch(0.75 0.02 250)", fontSize: 11 }}
+                                          />
+                                          <YAxis
+                                            allowDecimals={false}
+                                            tick={{ fill: "oklch(0.75 0.02 250)", fontSize: 11 }}
+                                          />
+                                          <Tooltip
+                                            cursor={{ fill: "oklch(0.2 0.05 250 / 0.4)" }}
+                                            contentStyle={{
+                                              background: "oklch(0.16 0.03 250)",
+                                              border: "1px solid oklch(0.28 0.04 250)",
+                                              borderRadius: "12px",
+                                              color: "oklch(0.98 0.01 250)",
+                                              boxShadow: "0 8px 30px rgba(0,0,0,0.3)",
+                                            }}
+                                            itemStyle={{ fontWeight: 600, color: "var(--primary)" }}
+                                          />
+                                          <Bar dataKey="count" radius={[6, 6, 0, 0]} maxBarSize={40}>
+                                            {chartData.map((_, index) => (
+                                              <Cell
+                                                key={`cell-${index}`}
+                                                fill={CHART_COLORS[index % CHART_COLORS.length]}
+                                              />
+                                            ))}
+                                          </Bar>
+                                        </BarChart>
+                                      </ResponsiveContainer>
+                                    </CardContent>
+                                  </Card>
                                 );
                               })}
                             </div>
@@ -546,15 +559,16 @@ export default function AdminPage() {
 
         {/* Leaderboard Tab */}
         <TabsContent value="leaderboard">
-          <div className="lq-glass rounded-2xl p-8 border-border/60 shadow-xl shadow-black/20">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-heading font-bold flex items-center gap-3">
+          <Card className="lq-glass border-border/60 shadow-xl shadow-black/20">
+            <CardHeader className="flex flex-row items-center justify-between pb-8">
+              <CardTitle className="text-2xl font-heading font-bold flex items-center gap-3">
                 <span className="text-3xl">🏆</span> Final Leaderboard
-              </h2>
+              </CardTitle>
               <Badge variant="secondary" className="text-sm px-4 py-1.5 font-medium bg-primary/10 text-primary border-primary/20">
                 {filteredSubmissions.length} Players
               </Badge>
-            </div>
+            </CardHeader>
+            <CardContent>
 
             {filteredSubmissions.length === 0 ? (
               <div className="text-center py-12 text-muted-foreground">
@@ -582,49 +596,64 @@ export default function AdminPage() {
                           </TableHead>
                           <TableHead className="font-semibold">Name</TableHead>
                           <TableHead className="font-semibold">Group</TableHead>
+                          <TableHead className="font-semibold">Submitted</TableHead>
+                          <TableHead className="font-semibold">Time Taken</TableHead>
                           <TableHead className="text-right font-semibold">
                             Score
                           </TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {filteredSubmissions.map((sub, index) => (
-                          <TableRow
-                            key={sub.id}
-                            className="border-border/30 hover:bg-secondary/20 transition-colors"
-                          >
-                            <TableCell className="text-center">
-                              {index === 0 ? (
-                                <span className="text-lg">🥇</span>
-                              ) : index === 1 ? (
-                                <span className="text-lg">🥈</span>
-                              ) : index === 2 ? (
-                                <span className="text-lg">🥉</span>
-                              ) : (
-                                <span className="text-muted-foreground font-mono text-sm">
-                                  {index + 1}
+                        {filteredSubmissions.map((sub, index) => {
+                          const timeStr = new Date(sub.submittedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                          const mins = Math.floor((sub.timeTakenSeconds || 0) / 60);
+                          const secs = (sub.timeTakenSeconds || 0) % 60;
+                          const durationStr = sub.timeTakenSeconds ? `${mins}m ${secs}s` : "N/A";
+
+                          return (
+                            <TableRow
+                              key={sub.id}
+                              className="border-border/30 hover:bg-secondary/20 transition-colors"
+                            >
+                              <TableCell className="text-center">
+                                {index === 0 ? (
+                                  <span className="text-lg">🥇</span>
+                                ) : index === 1 ? (
+                                  <span className="text-lg">🥈</span>
+                                ) : index === 2 ? (
+                                  <span className="text-lg">🥉</span>
+                                ) : (
+                                  <span className="text-muted-foreground font-mono text-sm">
+                                    {index + 1}
+                                  </span>
+                                )}
+                              </TableCell>
+                              <TableCell className="font-medium">
+                                {sub.playerName}
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant="secondary" className="text-xs">
+                                  {sub.groupName}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-muted-foreground text-sm">
+                                {timeStr}
+                              </TableCell>
+                              <TableCell className="text-muted-foreground text-sm">
+                                {durationStr}
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <span
+                                  className={`font-bold font-mono ${
+                                    index < 3 ? "text-primary" : ""
+                                  }`}
+                                >
+                                  {sub.totalScore}
                                 </span>
-                              )}
-                            </TableCell>
-                            <TableCell className="font-medium">
-                              {sub.playerName}
-                            </TableCell>
-                            <TableCell>
-                              <Badge variant="secondary" className="text-xs">
-                                {sub.groupName}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <span
-                                className={`font-bold font-mono ${
-                                  index < 3 ? "text-primary" : ""
-                                }`}
-                              >
-                                {sub.totalScore}
-                              </span>
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
                       </TableBody>
                     </Table>
                   </div>
@@ -689,7 +718,8 @@ export default function AdminPage() {
                 </TabsContent>
               </Tabs>
             )}
-          </div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </main>

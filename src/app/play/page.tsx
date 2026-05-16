@@ -7,6 +7,12 @@ import { useTimer } from "@/hooks/useTimer";
 import { questions } from "@/data/questions";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 const TOTAL_ROUNDS = 6;
 
@@ -55,6 +61,10 @@ export default function PlayPage() {
     setIsSubmitting(true);
 
     try {
+      const timeTakenSeconds = gameStartTime 
+        ? Math.floor((Date.now() - gameStartTime) / 1000)
+        : 0;
+
       const response = await fetch("/api/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -63,6 +73,7 @@ export default function PlayPage() {
           groupName,
           answers,
           roundScores,
+          timeTakenSeconds,
         }),
       });
 
@@ -120,10 +131,10 @@ export default function PlayPage() {
 
     return (
       <main className="flex-1 flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-lg text-center lq-fade-in">
-          <div className="lq-glass rounded-2xl p-10 lq-glow-secondary">
+        <Card className="w-full max-w-lg text-center lq-fade-in lq-glass lq-glow-secondary border-secondary/20">
+          <CardHeader className="pb-6 pt-10">
             {/* Trophy icon */}
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-chart-2/10 border border-chart-2/20 mb-6 shadow-[0_0_20px_oklch(0.72_0.15_220_/_0.2)]">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-chart-2/10 border border-chart-2/20 mb-6 shadow-[0_0_20px_oklch(0.72_0.15_220_/_0.2)] mx-auto">
               <svg
                 className="w-10 h-10 text-chart-2"
                 fill="none"
@@ -139,7 +150,7 @@ export default function PlayPage() {
               </svg>
             </div>
 
-            <h1 className="text-4xl font-heading font-bold mb-2">Quest Complete!</h1>
+            <CardTitle className="text-4xl font-heading font-bold mb-2">Quest Complete!</CardTitle>
             <p className="text-muted-foreground mb-8 text-lg">
               Great work, <span className="text-foreground font-medium">{playerName}</span>!
             </p>
@@ -152,8 +163,10 @@ export default function PlayPage() {
                 out of {maxPossible} possible points
               </p>
             </div>
+          </CardHeader>
 
-            <div className="mt-8 grid grid-cols-2 gap-4 text-sm">
+          <CardContent className="pb-10">
+            <div className="mt-2 grid grid-cols-2 gap-4 text-sm">
               <div className="bg-secondary/30 rounded-xl p-4">
                 <div className="text-muted-foreground mb-1">Group</div>
                 <div className="font-semibold">{groupName}</div>
@@ -170,8 +183,8 @@ export default function PlayPage() {
               Your results have been submitted. Wait for the presenter to reveal
               the leaderboard!
             </p>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </main>
     );
   }
@@ -231,17 +244,21 @@ export default function PlayPage() {
       {currentQuestion && (
         <div className="flex-1 flex flex-col" key={currentRound}>
           {/* Scenario */}
-          <div className="lq-glass rounded-2xl p-6 mb-6 lq-fade-in">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center text-lg font-heading font-bold text-primary shadow-[0_0_15px_oklch(0.65_0.22_250_/_0.2)]">
-                {currentRound}
+          <Card className="lq-glass mb-6 lq-fade-in border-border/50 shadow-lg shadow-black/20">
+            <CardHeader className="pb-4">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center text-lg font-heading font-bold text-primary shadow-[0_0_15px_oklch(0.65_0.22_250_/_0.2)]">
+                  {currentRound}
+                </div>
+                <CardTitle className="text-base font-heading font-medium text-muted-foreground tracking-wide">
+                  Leadership Scenario
+                </CardTitle>
               </div>
-              <h2 className="text-base font-heading font-medium text-muted-foreground tracking-wide">
-                Leadership Scenario
-              </h2>
-            </div>
-            <p className="text-[1.1rem] leading-relaxed text-foreground/90 font-medium">{currentQuestion.scenario}</p>
-          </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-[1.1rem] leading-relaxed text-foreground/90 font-medium">{currentQuestion.scenario}</p>
+            </CardContent>
+          </Card>
 
           {/* Options */}
           <div className="grid gap-3 lq-stagger">

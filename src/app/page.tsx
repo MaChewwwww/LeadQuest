@@ -13,6 +13,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -52,10 +59,9 @@ export default function OnboardingPage() {
 
   return (
     <main className="flex-1 flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md lq-fade-in">
-        {/* Logo / Title */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 border border-primary/40 shadow-[0_0_20px_oklch(0.65_0.22_250_/_0.2)] mb-6">
+      <Card className="w-full max-w-md lq-fade-in lq-glass lq-glow-primary border-primary/20">
+        <CardHeader className="text-center pb-6">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 border border-primary/40 shadow-[0_0_20px_oklch(0.65_0.22_250_/_0.2)] mb-6 mx-auto">
             <svg
               className="w-8 h-8 text-primary"
               fill="none"
@@ -70,18 +76,17 @@ export default function OnboardingPage() {
               />
             </svg>
           </div>
-          <h1 className="text-5xl font-heading font-bold tracking-tight mb-2">
+          <CardTitle className="text-5xl font-heading font-bold tracking-tight mb-2">
             <span className="bg-gradient-to-r from-primary to-chart-2 bg-clip-text text-transparent drop-shadow-sm">
               LeadQuest
             </span>
-          </h1>
-          <p className="text-muted-foreground text-sm">
+          </CardTitle>
+          <CardDescription className="text-muted-foreground text-sm font-medium">
             Leadership Simulation &bull; 6 Rounds &bull; 15 Minutes
-          </p>
-        </div>
+          </CardDescription>
+        </CardHeader>
 
-        {/* Form Card */}
-        <div className="lq-glass rounded-2xl p-8 lq-glow-primary border border-primary/20">
+        <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="playerName" className="text-sm font-medium">
@@ -154,8 +159,8 @@ export default function OnboardingPage() {
           <p className="text-center text-xs text-muted-foreground/60 mt-6">
             Your progress is saved locally. You can safely refresh the page.
           </p>
-        </div>
-      </div>
-    </main>
-  );
+          </CardContent>
+        </Card>
+      </main>
+    );
 }

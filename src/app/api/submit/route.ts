@@ -5,7 +5,7 @@ import { submissions } from '@/db/schema';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { playerName, groupName, answers, roundScores } = body;
+    const { playerName, groupName, answers, roundScores, timeTakenSeconds } = body;
 
     if (!playerName || !groupName || !answers || !roundScores) {
       return NextResponse.json(
@@ -26,6 +26,7 @@ export async function POST(request: NextRequest) {
       totalScore,
       answers,
       roundScores,
+      timeTakenSeconds: timeTakenSeconds || 0,
       completed: true,
     });
 

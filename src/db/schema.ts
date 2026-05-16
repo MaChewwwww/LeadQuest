@@ -16,4 +16,5 @@ export const submissions = pgTable('submissions', {
   
   completed: boolean('completed').default(true),
   submittedAt: timestamp('submitted_at').defaultNow(),
+  timeTakenSeconds: integer('time_taken_seconds').default(0),
 });
