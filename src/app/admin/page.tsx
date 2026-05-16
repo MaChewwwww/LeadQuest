@@ -368,7 +368,14 @@ export default function AdminPage() {
                       {currentQuestion.options.map(opt => (
                         <div key={opt.label} className="bg-secondary/40 p-3 rounded-lg flex items-start gap-3">
                           <Badge variant="outline" className="shrink-0">{opt.label}</Badge>
-                          <span className="text-sm text-muted-foreground">{opt.text} <span className="text-foreground ml-1 font-medium">({opt.score} pts)</span></span>
+                          <span className="text-sm text-muted-foreground">
+                            {opt.text}
+                            {isRevealed && (
+                              <span className="text-foreground ml-2 font-medium">
+                                ({opt.score} pts)
+                              </span>
+                            )}
+                          </span>
                         </div>
                       ))}
                     </div>
