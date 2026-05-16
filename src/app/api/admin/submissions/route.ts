@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { submissions } from '@/db/schema';
-import { desc } from 'drizzle-orm';
+import { desc, asc } from 'drizzle-orm';
 
 export async function GET() {
   try {
     const allSubmissions = await db
       .select()
       .from(submissions)
-      .orderBy(desc(submissions.totalScore));
+      .orderBy(desc(submissions.totalScore), asc(submissions.submittedAt));
 
     return NextResponse.json({ submissions: allSubmissions });
   } catch (error) {

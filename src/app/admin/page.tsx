@@ -121,11 +121,13 @@ export default function AdminPage() {
     }
   };
 
-  // Get choice distribution for a round for a specific group
-  const getChoiceDistribution = (round: number, groupName: string) => {
+  // Get choice distribution for a round (optionally filtered by group)
+  const getChoiceDistribution = (round: number, groupName?: string) => {
     const distribution: Record<string, number> = { A: 0, B: 0, C: 0, D: 0 };
 
-    const subsToCount = submissions.filter((s) => s.groupName === groupName);
+    const subsToCount = groupName && groupName !== "All"
+      ? submissions.filter((s) => s.groupName === groupName)
+      : filteredSubmissions;
 
     subsToCount.forEach((sub) => {
       const answer = sub.answers?.[String(round)];
@@ -385,11 +387,8 @@ export default function AdminPage() {
                 {/* Charts (revealed) */}
                 {isRevealed && (
                   <div className="space-y-6 lq-fade-in">
-                    <h3 className="text-sm font-medium text-muted-foreground mb-4">
-                      Choice Distribution
-                    </h3>
                     {roundSubs === 0 ? (
-                      <div className="text-center py-12 text-muted-foreground">
+                      <div className="lq-glass rounded-2xl p-6 text-center py-12 text-muted-foreground">
                         <p className="text-lg font-medium mb-1">
                           No responses yet
                         </p>
@@ -398,52 +397,104 @@ export default function AdminPage() {
                         </p>
                       </div>
                     ) : (
-                      <div className={`grid gap-6 ${activeGroups.length > 1 ? 'md:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'}`}>
-                        {activeGroups.map(group => {
-                          const chartData = getChoiceDistribution(round, group);
-                          return (
-                            <div key={group} className="lq-glass rounded-2xl p-6">
-                              <h3 className="text-sm font-medium text-muted-foreground mb-4">
-                                {group} Distribution
-                              </h3>
-                              <ResponsiveContainer width="100%" height={250}>
-                                <BarChart
-                                  data={chartData}
-                                  margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
-                                >
-                                  <CartesianGrid
-                                    strokeDasharray="3 3"
-                                    stroke="oklch(0.3 0.03 280)"
+                      <div className="space-y-8">
+                        {/* Overall Chart */}
+                        <div className="lq-glass rounded-2xl p-6">
+                          <h3 className="text-sm font-medium text-muted-foreground mb-4">
+                            Overall Choice Distribution
+                          </h3>
+                          <ResponsiveContainer width="100%" height={280}>
+                            <BarChart
+                              data={getChoiceDistribution(round)}
+                              margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
+                            >
+                              <CartesianGrid
+                                strokeDasharray="3 3"
+                                stroke="oklch(0.3 0.03 280)"
+                              />
+                              <XAxis
+                                dataKey="label"
+                                tick={{ fill: "oklch(0.65 0.02 280)", fontSize: 13 }}
+                              />
+                              <YAxis
+                                allowDecimals={false}
+                                tick={{ fill: "oklch(0.65 0.02 280)", fontSize: 13 }}
+                              />
+                              <Tooltip
+                                contentStyle={{
+                                  background: "oklch(0.2 0.025 280)",
+                                  border: "1px solid oklch(0.3 0.03 280)",
+                                  borderRadius: "12px",
+                                  color: "oklch(0.95 0.01 280)",
+                                }}
+                              />
+                              <Bar dataKey="count" radius={[8, 8, 0, 0]} maxBarSize={60}>
+                                {getChoiceDistribution(round).map((_, index) => (
+                                  <Cell
+                                    key={`cell-${index}`}
+                                    fill={CHART_COLORS[index % CHART_COLORS.length]}
                                   />
-                                  <XAxis
-                                    dataKey="label"
-                                    tick={{ fill: "oklch(0.65 0.02 280)", fontSize: 13 }}
-                                  />
-                                  <YAxis
-                                    allowDecimals={false}
-                                    tick={{ fill: "oklch(0.65 0.02 280)", fontSize: 13 }}
-                                  />
-                                  <Tooltip
-                                    contentStyle={{
-                                      background: "oklch(0.2 0.025 280)",
-                                      border: "1px solid oklch(0.3 0.03 280)",
-                                      borderRadius: "12px",
-                                      color: "oklch(0.95 0.01 280)",
-                                    }}
-                                  />
-                                  <Bar dataKey="count" radius={[8, 8, 0, 0]} maxBarSize={60}>
-                                    {chartData.map((_, index) => (
-                                      <Cell
-                                        key={`cell-${index}`}
-                                        fill={CHART_COLORS[index % CHART_COLORS.length]}
-                                      />
-                                    ))}
-                                  </Bar>
-                                </BarChart>
-                              </ResponsiveContainer>
+                                ))}
+                              </Bar>
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+
+                        {/* Group Breakdown Grid */}
+                        {activeGroups.length > 1 && (
+                          <div>
+                            <h3 className="text-sm font-medium text-muted-foreground mb-4 px-2">
+                              Breakdown by Group
+                            </h3>
+                            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                              {activeGroups.map(group => {
+                                const chartData = getChoiceDistribution(round, group);
+                                return (
+                                  <div key={group} className="lq-glass rounded-2xl p-6">
+                                    <h3 className="text-sm font-medium text-foreground mb-4">
+                                      {group}
+                                    </h3>
+                                    <ResponsiveContainer width="100%" height={200}>
+                                      <BarChart
+                                        data={chartData}
+                                        margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
+                                      >
+                                        <CartesianGrid
+                                          strokeDasharray="3 3"
+                                          stroke="oklch(0.3 0.03 280)"
+                                        />
+                                        <XAxis
+                                          dataKey="label"
+                                          tick={{ fill: "oklch(0.65 0.02 280)", fontSize: 11 }}
+                                        />
+                                        <YAxis
+                                          allowDecimals={false}
+                                          tick={{ fill: "oklch(0.65 0.02 280)", fontSize: 11 }}
+                                        />
+                                        <Tooltip
+                                          contentStyle={{
+                                            background: "oklch(0.2 0.025 280)",
+                                            border: "1px solid oklch(0.3 0.03 280)",
+                                            borderRadius: "12px",
+                                            color: "oklch(0.95 0.01 280)",
+                                          }}
+                                        />
+                                        <Bar dataKey="count" radius={[6, 6, 0, 0]} maxBarSize={40}>
+                                          {chartData.map((_, index) => (
+                                            <Cell
+                                              key={`cell-${index}`}
+                                              fill={CHART_COLORS[index % CHART_COLORS.length]}
+                                            />
+                                          ))}
+                                        </Bar>
+                                      </BarChart>
+                                    </ResponsiveContainer>
+                                  </div>
+                                );
+                              })}
                             </div>
-                          );
-                        })}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
