@@ -619,7 +619,8 @@ export default function AdminPage() {
               <Badge variant="secondary" className="text-sm px-4 py-1.5 font-medium bg-primary/10 text-primary border-primary/20">
                 {filteredSubmissions.length} Players
               </Badge>
-                        <CardContent>
+            </CardHeader>
+            <CardContent>
               {filteredSubmissions.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground">
                   <p className="text-lg font-medium mb-1">No submissions yet</p>
