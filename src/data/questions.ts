@@ -29,22 +29,22 @@ export const questions: Question[] = [
     options: [
       {
         label: "A",
-        text: "Data Entry & Auditing (Strict rules, high focus).",
+        text: "Data Entry & Auditing.",
         score: -50,
       },
       {
         label: "B",
-        text: "Fire Alex. Professionalism is everything.",
+        text: "Fire Alex. Professionalism is is prioritized.",
         score: 0,
       },
       {
         label: "C",
-        text: "Research & Development (Idea generation, flexible schedule).",
+        text: "Research & Development.",
         score: 100,
       },
       {
         label: "D",
-        text: "Customer Service (Dealing with angry clients).",
+        text: "Customer Service.",
         score: -20,
       },
     ],
@@ -124,7 +124,7 @@ export const questions: Question[] = [
       },
       {
         label: "B",
-        text: "It was Information Overload; send 5 more emails to clarify.",
+        text: "It was Information Overload; clarification is needed.",
         score: -50,
       },
       {
