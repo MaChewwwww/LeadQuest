@@ -1,7 +1,9 @@
 export interface Question {
   id: number;
   round: number;
+  title: string;
   scenario: string;
+  illustration: string;
   options: {
     label: string;
     text: string;
@@ -20,8 +22,10 @@ export const questions: Question[] = [
   {
     id: 1,
     round: 1,
+    title: "The Blame Game",
     scenario:
       "Your team just missed a critical deadline. During the post-mortem meeting, a junior team member is being blamed by the rest of the group. As the team leader, what do you do?",
+    illustration: "/images/scenario-1.png",
     options: [
       {
         label: "A",
@@ -48,8 +52,10 @@ export const questions: Question[] = [
   {
     id: 2,
     round: 2,
+    title: "Tech Deadlock",
     scenario:
       "Two of your most experienced team members have a fundamental disagreement about the project's technical direction. Both approaches have merit, but the conflict is slowing down the entire team. How do you handle it?",
+    illustration: "/images/scenario-2.png",
     options: [
       {
         label: "A",
@@ -76,8 +82,10 @@ export const questions: Question[] = [
   {
     id: 3,
     round: 3,
+    title: "Conflicting Signals",
     scenario:
       "You discover that a key stakeholder has been providing conflicting requirements to different parts of your team, causing duplicated work and confusion. What is your first move?",
+    illustration: "/images/scenario-3.png",
     options: [
       {
         label: "A",
@@ -104,8 +112,10 @@ export const questions: Question[] = [
   {
     id: 4,
     round: 4,
+    title: "Crisis Management",
     scenario:
       "Your organization is going through a major restructuring. Your team is anxious about layoffs, and productivity has dropped significantly. Morale is at an all-time low. What approach do you take?",
+    illustration: "/images/scenario-4.png",
     options: [
       {
         label: "A",
@@ -132,8 +142,10 @@ export const questions: Question[] = [
   {
     id: 5,
     round: 5,
+    title: "Retention Dilemma",
     scenario:
       "A high-performing team member comes to you wanting to leave for a different department. Losing them would significantly impact your project's success. They cite lack of growth opportunities. What do you do?",
+    illustration: "/images/scenario-5.png",
     options: [
       {
         label: "A",
@@ -160,8 +172,10 @@ export const questions: Question[] = [
   {
     id: 6,
     round: 6,
+    title: "Victory & Credit",
     scenario:
       "Your team has delivered a successful product, but you realize that one team member did far more work than everyone else. During the team celebration, the CEO asks who deserves the most credit. How do you respond?",
+    illustration: "/images/scenario-6.png",
     options: [
       {
         label: "A",

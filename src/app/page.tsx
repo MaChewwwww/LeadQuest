@@ -6,6 +6,7 @@ import { useGameStore } from "@/store/useGameStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import Image from "next/image";
 import {
   Select,
   SelectContent,
@@ -58,63 +59,63 @@ export default function OnboardingPage() {
   }
 
   return (
-    <main className="flex-1 flex items-center justify-center px-4 py-12">
-      <Card className="w-full max-w-md lq-fade-in lq-glass lq-glow-primary border-primary/20">
-        <CardHeader className="text-center pb-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 border border-primary/40 shadow-[0_0_20px_oklch(0.65_0.22_250_/_0.2)] mb-6 mx-auto">
-            <svg
-              className="w-8 h-8 text-primary"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M13 10V3L4 14h7v7l9-11h-7z"
-              />
-            </svg>
+    <main className="flex-1 flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden">
+      {/* Visual background lights */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
+      
+      <Card className="w-full max-w-md lq-fade-in lq-glass lq-glow-primary border-primary/20 relative z-10">
+        <CardHeader className="text-center pb-4 pt-8">
+          {/* AI-Generated logo container */}
+          <div className="relative w-24 h-24 mx-auto mb-4 rounded-2xl overflow-hidden border border-primary/30 shadow-[0_0_25px_oklch(0.65_0.22_250_/_0.25)] bg-background/50 flex items-center justify-center">
+            <Image
+              src="/images/logo.png"
+              alt="LeadQuest Logo"
+              width={96}
+              height={96}
+              className="object-cover"
+              priority
+            />
           </div>
-          <CardTitle className="text-5xl font-heading font-bold tracking-tight mb-2">
-            <span className="bg-gradient-to-r from-primary to-chart-2 bg-clip-text text-transparent drop-shadow-sm">
+          
+          <CardTitle className="text-5xl font-heading font-bold tracking-wider mb-2">
+            <span className="bg-gradient-to-r from-primary via-chart-2 to-cyan bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)]">
               LeadQuest
             </span>
           </CardTitle>
-          <CardDescription className="text-muted-foreground text-sm font-medium">
-            Leadership Simulation &bull; 6 Rounds &bull; 15 Minutes
+          <CardDescription className="text-muted-foreground/80 text-sm font-medium tracking-wide">
+            Interactive Leadership Simulator
           </CardDescription>
         </CardHeader>
 
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="playerName" className="text-sm font-medium">
-                Your Name
+        <CardContent className="pb-8">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-1.5">
+              <Label htmlFor="playerName" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Your Full Name
               </Label>
               <Input
                 id="playerName"
                 type="text"
-                placeholder="Enter your full name"
+                placeholder="e.g. Commander Alex Mercer"
                 value={playerName}
                 onChange={(e) => setPlayerName(e.target.value)}
                 maxLength={100}
                 required
-                className="h-12 bg-secondary/50 border-border/50 focus:border-primary/50 transition-colors placeholder:text-muted-foreground/50"
+                className="h-12 bg-secondary/35 border-border/40 focus:border-primary/60 transition-all placeholder:text-muted-foreground/40 text-sm font-medium rounded-xl"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="groupName" className="text-sm font-medium">
-                Group Number
+            <div className="space-y-1.5">
+              <Label htmlFor="groupName" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Assigned Group
               </Label>
               <Select value={groupName} onValueChange={(val) => val && setGroupName(val)} required>
-                <SelectTrigger className="h-12 bg-secondary/50 border-border/50 focus:ring-primary/50 transition-colors">
-                  <SelectValue placeholder="Select your group" />
+                <SelectTrigger className="h-12 bg-secondary/35 border-border/40 focus:ring-primary/60 transition-all text-sm font-medium rounded-xl">
+                  <SelectValue placeholder="Select your group number" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-popover border-border/60">
                   {Array.from({ length: 9 }, (_, i) => i + 1).map((num) => (
-                    <SelectItem key={num} value={`Group ${num}`}>
+                    <SelectItem key={num} value={`Group ${num}`} className="focus:bg-primary/20 text-sm font-medium">
                       Group {num}
                     </SelectItem>
                   ))}
@@ -125,7 +126,7 @@ export default function OnboardingPage() {
             <Button
               type="submit"
               disabled={isLoading || !playerName.trim() || !groupName.trim()}
-              className="w-full h-12 text-base font-semibold bg-primary hover:bg-primary/90 transition-all duration-300 hover:shadow-[0_0_30px_oklch(0.65_0.22_250_/_0.3)] cursor-pointer text-primary-foreground font-heading tracking-wide"
+              className="w-full h-12 text-sm font-bold bg-primary hover:bg-primary/90 transition-all duration-300 hover:shadow-[0_0_25px_oklch(0.65_0.22_250_/_0.3)] cursor-pointer text-primary-foreground font-heading tracking-widest uppercase rounded-xl mt-2"
             >
               {isLoading ? (
                 <span className="flex items-center gap-2">
@@ -148,19 +149,35 @@ export default function OnboardingPage() {
                       d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
                     />
                   </svg>
-                  Starting...
+                  Initializing...
                 </span>
               ) : (
-                "Begin Quest →"
+                "Begin Quest"
               )}
             </Button>
           </form>
 
-          <p className="text-center text-xs text-muted-foreground/60 mt-6">
-            Your progress is saved locally. You can safely refresh the page.
+          {/* Feature Quick list */}
+          <div className="mt-8 pt-6 border-t border-border/30 grid grid-cols-3 gap-2 text-center text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+            <div className="flex flex-col items-center">
+              <span className="text-primary text-sm mb-0.5">06</span>
+              Rounds
+            </div>
+            <div className="flex flex-col items-center border-x border-border/20">
+              <span className="text-chart-2 text-sm mb-0.5">15m</span>
+              Global Time
+            </div>
+            <div className="flex flex-col items-center">
+              <span className="text-cyan text-sm mb-0.5">Path</span>
+              Animation
+            </div>
+          </div>
+
+          <p className="text-center text-[10px] text-muted-foreground/40 mt-6">
+            Session saved locally. Safe to refresh during gameplay.
           </p>
-          </CardContent>
-        </Card>
-      </main>
-    );
+        </CardContent>
+      </Card>
+    </main>
+  );
 }

@@ -102,44 +102,58 @@
 
 /* ---- LeadQuest Custom Styles ---- */
 
-/* Animated gradient background */
+/* Animated gradient background with moving grid */
 .lq-bg-gradient {
   background: 
-    radial-gradient(ellipse at 20% 50%, oklch(0.3 0.15 250 / 0.3), transparent 50%),
-    radial-gradient(ellipse at 80% 20%, oklch(0.25 0.12 220 / 0.2), transparent 50%),
-    radial-gradient(ellipse at 50% 80%, oklch(0.2 0.10 270 / 0.15), transparent 50%),
-    oklch(0.12 0.02 250);
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    radial-gradient(ellipse at 20% 30%, oklch(0.35 0.15 250 / 0.35), transparent 55%),
+    radial-gradient(ellipse at 80% 20%, oklch(0.28 0.14 220 / 0.25), transparent 50%),
+    radial-gradient(ellipse at 50% 85%, oklch(0.25 0.12 280 / 0.2), transparent 60%),
+    oklch(0.08 0.02 250);
+  background-size: 40px 40px, 40px 40px, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
+  animation: lq-bg-shift 20s ease-in-out infinite alternate;
+}
+
+@keyframes lq-bg-shift {
+  0% { background-position: 0px 0px, 0px 0px, 0% 0%, 100% 100%, 50% 50%, 0% 0%; }
+  100% { background-position: 20px 20px, 20px 20px, 10% 10%, 90% 90%, 40% 60%, 0% 0%; }
 }
 
 /* Glassmorphism card */
 .lq-glass {
-  background: oklch(0.16 0.03 250 / 0.7);
-  backdrop-filter: blur(20px);
-  border: 1px solid oklch(0.5 0.1 250 / 0.2);
+  background: oklch(0.14 0.03 250 / 0.75);
+  backdrop-filter: blur(24px);
+  border: 1px solid oklch(0.5 0.1 250 / 0.18);
+  box-shadow: 
+    0 10px 30px -10px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 0 oklch(1 0 0 / 0.08);
 }
 
 /* Glow effects */
 .lq-glow-primary {
   box-shadow: 
-    0 0 20px oklch(0.65 0.22 250 / 0.15),
-    0 0 60px oklch(0.65 0.22 250 / 0.05);
+    0 0 25px oklch(0.65 0.22 250 / 0.18),
+    0 0 60px oklch(0.65 0.22 250 / 0.06),
+    inset 0 1px 0 0 oklch(1 0 0 / 0.1);
 }
 
 .lq-glow-secondary {
   box-shadow: 
-    0 0 20px oklch(0.72 0.15 220 / 0.15),
-    0 0 60px oklch(0.72 0.15 220 / 0.05);
+    0 0 25px oklch(0.72 0.15 220 / 0.18),
+    0 0 60px oklch(0.72 0.15 220 / 0.06);
 }
 
 /* Pulse animation for timer */
 @keyframes lq-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.96); }
 }
 
 .lq-timer-critical {
-  animation: lq-pulse 1s ease-in-out infinite;
+  animation: lq-pulse 0.8s ease-in-out infinite;
   color: var(--destructive);
+  text-shadow: 0 0 10px oklch(0.577 0.245 27.325 / 0.5);
 }
 
 /* Shimmer effect for loading states */
@@ -151,28 +165,50 @@
 .lq-shimmer {
   background: linear-gradient(
     90deg,
-    oklch(0.24 0.04 250) 25%,
-    oklch(0.32 0.05 250) 50%,
-    oklch(0.24 0.04 250) 75%
+    oklch(0.20 0.03 250) 25%,
+    oklch(0.28 0.04 250) 50%,
+    oklch(0.20 0.03 250) 75%
   );
   background-size: 200% 100%;
   animation: lq-shimmer 2s ease-in-out infinite;
 }
 
-/* Option button hover glow */
+/* Option button styling & animations */
 .lq-option-btn {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
 }
 
-.lq-option-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px oklch(0.65 0.22 250 / 0.2);
+.lq-option-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.lq-option-btn:hover::after {
+  transform: translateX(100%);
+}
+
+.lq-option-btn:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.01);
+  border-color: oklch(0.65 0.22 250 / 0.5);
+  background: oklch(0.22 0.04 250 / 0.4);
+}
+
+.lq-option-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.99);
 }
 
 .lq-option-btn.selected {
-  background: oklch(0.65 0.22 250 / 0.15);
+  background: oklch(0.65 0.22 250 / 0.18);
   border-color: oklch(0.65 0.22 250);
-  box-shadow: 0 0 20px oklch(0.65 0.22 250 / 0.2);
+  box-shadow: 
+    0 0 20px oklch(0.65 0.22 250 / 0.25),
+    inset 0 0 12px oklch(0.65 0.22 250 / 0.1);
 }
 
 /* Fade-in animation */
@@ -182,26 +218,26 @@
 }
 
 .lq-fade-in {
-  animation: lq-fade-in 0.5s ease-out forwards;
+  animation: lq-fade-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Staggered children animation */
 .lq-stagger > * {
   opacity: 0;
-  animation: lq-fade-in 0.4s ease-out forwards;
+  animation: lq-fade-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .lq-stagger > *:nth-child(1) { animation-delay: 0.05s; }
-.lq-stagger > *:nth-child(2) { animation-delay: 0.1s; }
-.lq-stagger > *:nth-child(3) { animation-delay: 0.15s; }
-.lq-stagger > *:nth-child(4) { animation-delay: 0.2s; }
-.lq-stagger > *:nth-child(5) { animation-delay: 0.25s; }
-.lq-stagger > *:nth-child(6) { animation-delay: 0.3s; }
+.lq-stagger > *:nth-child(2) { animation-delay: 0.12s; }
+.lq-stagger > *:nth-child(3) { animation-delay: 0.18s; }
+.lq-stagger > *:nth-child(4) { animation-delay: 0.24s; }
+.lq-stagger > *:nth-child(5) { animation-delay: 0.3s; }
+.lq-stagger > *:nth-child(6) { animation-delay: 0.36s; }
 
 /* Score pop animation */
 @keyframes lq-score-pop {
-  0% { transform: scale(0.5); opacity: 0; }
-  60% { transform: scale(1.2); }
+  0% { transform: scale(0.7); opacity: 0; }
+  60% { transform: scale(1.1); }
   100% { transform: scale(1); opacity: 1; }
 }
 
@@ -211,5 +247,85 @@
 
 /* Progress bar fill */
 .lq-progress-fill {
-  transition: width 1s linear;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* SVG Line Drawing Path Animation */
+@keyframes lq-dash {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.lq-line-path {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: lq-dash 1.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Node bounce/scale-in */
+@keyframes lq-node-pop {
+  0% { transform: scale(0); opacity: 0; filter: blur(4px); }
+  70% { transform: scale(1.15); filter: none; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.lq-node-animate {
+  animation: lq-node-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Archetype Glow Panels */
+.lq-archetype-transformational {
+  border-color: oklch(0.765 0.177 163.223 / 0.4);
+  box-shadow: 
+    0 0 35px oklch(0.765 0.177 163.223 / 0.15),
+    inset 0 1px 0 0 oklch(0.765 0.177 163.223 / 0.15);
+}
+.lq-text-transformational {
+  color: oklch(0.765 0.177 163.223);
+  text-shadow: 0 0 10px oklch(0.765 0.177 163.223 / 0.3);
+}
+
+.lq-archetype-servant {
+  border-color: oklch(0.606 0.25 292.717 / 0.4);
+  box-shadow: 
+    0 0 35px oklch(0.606 0.25 292.717 / 0.15),
+    inset 0 1px 0 0 oklch(0.606 0.25 292.717 / 0.15);
+}
+.lq-text-servant {
+  color: oklch(0.606 0.25 292.717);
+  text-shadow: 0 0 10px oklch(0.606 0.25 292.717 / 0.3);
+}
+
+.lq-archetype-transactional {
+  border-color: oklch(0.82 0.18 84.429 / 0.4);
+  box-shadow: 
+    0 0 35px oklch(0.82 0.18 84.429 / 0.15),
+    inset 0 1px 0 0 oklch(0.82 0.18 84.429 / 0.15);
+}
+.lq-text-transactional {
+  color: oklch(0.82 0.18 84.429);
+  text-shadow: 0 0 10px oklch(0.82 0.18 84.429 / 0.3);
+}
+
+.lq-archetype-passive {
+  border-color: oklch(0.645 0.246 16.439 / 0.4);
+  box-shadow: 
+    0 0 35px oklch(0.645 0.246 16.439 / 0.15),
+    inset 0 1px 0 0 oklch(0.645 0.246 16.439 / 0.15);
+}
+.lq-text-passive {
+  color: oklch(0.645 0.246 16.439);
+  text-shadow: 0 0 10px oklch(0.645 0.246 16.439 / 0.3);
+}
+
+/* Pulsing energy line effect */
+@keyframes energy-flow {
+  0% { stroke-dashoffset: 20; }
+  100% { stroke-dashoffset: 0; }
+}
+
+.lq-energy-line {
+  stroke-dasharray: 6 6;
+  animation: energy-flow 1s linear infinite;
 }
