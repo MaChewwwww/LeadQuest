@@ -213,13 +213,11 @@ export default function PlayPage() {
                 </div>
               </div>
 
-              {/* Point Impact Badge */}
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">Cultural & Delivery Score</span>
-                <span className={`text-xl font-heading font-extrabold tracking-wide ${
-                  earnedScore > 0 ? "text-emerald-400" : earnedScore < 0 ? "text-rose-400" : "text-muted-foreground"
-                }`}>
-                  {earnedScore > 0 ? "+" : ""}{earnedScore} Points
+              {/* Decision Logged Confirmation */}
+              <div className="flex items-center justify-between pt-2 border-t border-border/25">
+                <span className="text-xs text-muted-foreground">Decision Vector Status</span>
+                <span className="text-xs font-bold text-primary tracking-widest uppercase">
+                  Logged Successfully
                 </span>
               </div>
             </CardContent>
@@ -254,12 +252,10 @@ export default function PlayPage() {
             const roundScore = roundScores[String(stepNum)] || 0;
 
             let badgeColor = "border-muted/50 bg-muted/20 text-muted-foreground";
-            if (isCompleted || isActive) {
-              if (roundScore >= 100) badgeColor = "border-emerald-500/40 bg-emerald-500/10 text-emerald-400";
-              else if (roundScore >= 50) badgeColor = "border-cyan-500/40 bg-cyan-500/10 text-cyan-400";
-              else if (roundScore > 0) badgeColor = "border-blue-500/40 bg-blue-500/10 text-blue-400";
-              else if (roundScore < 0) badgeColor = "border-rose-500/40 bg-rose-500/10 text-rose-400";
-              else badgeColor = "border-amber-500/40 bg-amber-500/10 text-amber-400";
+            if (isActive) {
+              badgeColor = "border-primary bg-primary/20 text-primary";
+            } else if (isCompleted) {
+              badgeColor = "border-cyan-500/40 bg-cyan-500/10 text-cyan-400";
             }
 
             return (
@@ -437,7 +433,7 @@ export default function PlayPage() {
               <div className="flex items-center gap-3">
                 {getArchetypeIcon(archetype.icon)}
                 <h2 className={`text-3xl font-heading font-black tracking-wide ${archetype.textClass}`}>
-                  {archetype.title}
+                  {playerName}: {archetype.title}
                 </h2>
               </div>
               
@@ -681,22 +677,17 @@ export default function PlayPage() {
             })}
           </div>
 
-          {/* Feedback Points Overlay pop */}
+          {/* Feedback Overlay pop */}
           {showFeedback && (
             <div className="mt-6 text-center lq-score-pop">
-              <div
-                className={`text-4xl font-heading font-black tracking-widest drop-shadow-md ${
-                  feedbackScore > 0
-                    ? "text-emerald-400"
-                    : feedbackScore < 0
-                    ? "text-rose-400"
-                    : "text-muted-foreground"
-                }`}
-              >
-                {feedbackScore > 0 ? "+" : ""}
-                {feedbackScore} PTS
+              <div className="text-xl font-heading font-bold text-primary tracking-widest uppercase drop-shadow-sm flex items-center justify-center gap-2">
+                <svg className="animate-spin h-4 w-4 text-primary" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                </svg>
+                {currentRound < TOTAL_ROUNDS ? "Recording Choice..." : "Processing Final Matrix..."}
               </div>
-              <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1">
+              <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1.5">
                 {currentRound < TOTAL_ROUNDS
                   ? "Aligning team vectors..."
                   : "Final responses saved!"}

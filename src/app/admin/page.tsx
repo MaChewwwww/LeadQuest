@@ -31,6 +31,8 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
+  PieChart,
+  Pie,
 } from "recharts";
 import {
   Select,
@@ -60,6 +62,34 @@ const CHART_COLORS = [
   "oklch(0.82 0.18 84)",    // amber
   "oklch(0.715 0.143 215)", // cyan
 ];
+
+function getLeadershipArchetype(score: number) {
+  if (score >= 500) {
+    return {
+      title: "Transformational Visionary",
+      colorClass: "border-emerald-500/30 bg-emerald-500/10 text-emerald-400",
+      color: "oklch(0.765 0.177 163)"
+    };
+  } else if (score >= 350) {
+    return {
+      title: "Empathetic Collaborator",
+      colorClass: "border-violet-500/30 bg-violet-500/10 text-violet-400",
+      color: "oklch(0.72 0.22 292)"
+    };
+  } else if (score >= 150) {
+    return {
+      title: "Pragmatic Strategist",
+      colorClass: "border-amber-500/30 bg-amber-500/10 text-amber-400",
+      color: "oklch(0.82 0.18 84)"
+    };
+  } else {
+    return {
+      title: "Crisis-Averse Administrator",
+      colorClass: "border-rose-500/30 bg-rose-500/10 text-rose-400",
+      color: "oklch(0.70 0.18 20)"
+    };
+  }
+}
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -95,6 +125,28 @@ export default function AdminPage() {
         players: data.count,
       }))
       .sort((a, b) => b.averageScore - a.averageScore);
+  }, [filteredSubmissions]);
+
+  // Compute archetype distribution for the pie chart
+  const archetypeDistribution = useMemo(() => {
+    const counts = {
+      "Transformational Visionary": 0,
+      "Empathetic Collaborator": 0,
+      "Pragmatic Strategist": 0,
+      "Crisis-Averse Administrator": 0,
+    };
+
+    filteredSubmissions.forEach((sub) => {
+      const arch = getLeadershipArchetype(sub.totalScore).title;
+      counts[arch as keyof typeof counts] = (counts[arch as keyof typeof counts] || 0) + 1;
+    });
+
+    return [
+      { name: "Transformational Visionary", value: counts["Transformational Visionary"], color: "oklch(0.765 0.177 163)" },
+      { name: "Empathetic Collaborator", value: counts["Empathetic Collaborator"], color: "oklch(0.72 0.22 292)" },
+      { name: "Pragmatic Strategist", value: counts["Pragmatic Strategist"], color: "oklch(0.82 0.18 84)" },
+      { name: "Crisis-Averse Administrator", value: counts["Crisis-Averse Administrator"], color: "oklch(0.70 0.18 20)" },
+    ].filter(item => item.value > 0);
   }, [filteredSubmissions]);
 
   // Fetch submissions
@@ -567,157 +619,204 @@ export default function AdminPage() {
               <Badge variant="secondary" className="text-sm px-4 py-1.5 font-medium bg-primary/10 text-primary border-primary/20">
                 {filteredSubmissions.length} Players
               </Badge>
-            </CardHeader>
-            <CardContent>
-
-            {filteredSubmissions.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
-                <p className="text-lg font-medium mb-1">No submissions yet</p>
-                <p className="text-sm">
-                  Waiting for students to complete the game...
-                </p>
-              </div>
-            ) : (
-              <Tabs defaultValue="individual" className="w-full">
-                <div className="flex justify-center mb-6">
-                  <TabsList className="grid w-[400px] grid-cols-2">
-                    <TabsTrigger value="individual">Individual Ranking</TabsTrigger>
-                    <TabsTrigger value="group">Group Averages</TabsTrigger>
-                  </TabsList>
+                        <CardContent>
+              {filteredSubmissions.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <p className="text-lg font-medium mb-1">No submissions yet</p>
+                  <p className="text-sm">
+                    Waiting for students to complete the game...
+                  </p>
                 </div>
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  {/* Left Column: Archetype Distribution Pie Chart */}
+                  <div className="lg:col-span-1">
+                    <Card className="bg-secondary/15 border-border/30 p-5 rounded-2xl flex flex-col justify-between h-full shadow-md">
+                      <div>
+                        <h3 className="text-base font-heading font-bold text-foreground mb-1">
+                          Leadership Profiles
+                        </h3>
+                        <p className="text-xs text-muted-foreground mb-4">
+                          Distribution of leadership profiles within the selected filter.
+                        </p>
 
-                <TabsContent value="individual">
-                  <div className="rounded-xl border border-border/50 overflow-hidden">
-                    <Table>
-                      <TableHeader>
-                        <TableRow className="border-border/50 hover:bg-transparent">
-                          <TableHead className="w-16 text-center font-semibold">
-                            Rank
-                          </TableHead>
-                          <TableHead className="font-semibold">Name</TableHead>
-                          <TableHead className="font-semibold">Group</TableHead>
-                          <TableHead className="font-semibold">Submitted</TableHead>
-                          <TableHead className="font-semibold">Time Taken</TableHead>
-                          <TableHead className="text-right font-semibold">
-                            Score
-                          </TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {filteredSubmissions.map((sub, index) => {
-                          const timeStr = new Date(sub.submittedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                          const mins = Math.floor((sub.timeTakenSeconds || 0) / 60);
-                          const secs = (sub.timeTakenSeconds || 0) % 60;
-                          const durationStr = sub.timeTakenSeconds ? `${mins}m ${secs}s` : "N/A";
-
-                          return (
-                            <TableRow
-                              key={sub.id}
-                              className="border-border/30 hover:bg-secondary/20 transition-colors"
-                            >
-                              <TableCell className="text-center">
-                                {index === 0 ? (
-                                  <span className="text-lg">🥇</span>
-                                ) : index === 1 ? (
-                                  <span className="text-lg">🥈</span>
-                                ) : index === 2 ? (
-                                  <span className="text-lg">🥉</span>
-                                ) : (
-                                  <span className="text-muted-foreground font-mono text-sm">
-                                    {index + 1}
-                                  </span>
-                                )}
-                              </TableCell>
-                              <TableCell className="font-medium">
-                                {sub.playerName}
-                              </TableCell>
-                              <TableCell>
-                                <Badge variant="secondary" className="text-xs">
-                                  {sub.groupName}
-                                </Badge>
-                              </TableCell>
-                              <TableCell className="text-muted-foreground text-sm">
-                                {timeStr}
-                              </TableCell>
-                              <TableCell className="text-muted-foreground text-sm">
-                                {durationStr}
-                              </TableCell>
-                              <TableCell className="text-right">
-                                <span
-                                  className={`font-bold font-mono ${
-                                    index < 3 ? "text-primary" : ""
-                                  }`}
+                        {archetypeDistribution.length === 0 ? (
+                          <div className="h-48 flex items-center justify-center text-muted-foreground text-xs">
+                            No profiles generated yet
+                          </div>
+                        ) : (
+                          <div className="relative h-48 w-full flex items-center justify-center">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <PieChart>
+                                <Pie
+                                  data={archetypeDistribution}
+                                  cx="50%"
+                                  cy="50%"
+                                  innerRadius={45}
+                                  outerRadius={65}
+                                  paddingAngle={4}
+                                  dataKey="value"
                                 >
-                                  {sub.totalScore}
-                                </span>
-                              </TableCell>
-                            </TableRow>
+                                  {archetypeDistribution.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.color} />
+                                  ))}
+                                </Pie>
+                                <Tooltip
+                                  contentStyle={{
+                                    background: "oklch(0.16 0.03 250)",
+                                    border: "1px solid oklch(0.28 0.04 250)",
+                                    borderRadius: "12px",
+                                    color: "oklch(0.98 0.01 250)",
+                                    boxShadow: "0 8px 30px rgba(0,0,0,0.3)",
+                                  }}
+                                />
+                              </PieChart>
+                            </ResponsiveContainer>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Custom Legend */}
+                      <div className="space-y-2.5 mt-4 pt-4 border-t border-border/20">
+                        {archetypeDistribution.map((entry) => {
+                          const pct = Math.round((entry.value / filteredSubmissions.length) * 100);
+                          return (
+                            <div key={entry.name} className="flex items-center justify-between text-xs font-semibold">
+                              <div className="flex items-center gap-2 max-w-[70%]">
+                                <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: entry.color }} />
+                                <span className="text-muted-foreground truncate">{entry.name}</span>
+                              </div>
+                              <span className="text-foreground shrink-0">{entry.value} ({pct}%)</span>
+                            </div>
                           );
                         })}
-                      </TableBody>
-                    </Table>
+                      </div>
+                    </Card>
                   </div>
-                </TabsContent>
 
-                <TabsContent value="group">
-                  <div className="rounded-xl border border-border/50 overflow-hidden">
-                    <Table>
-                      <TableHeader>
-                        <TableRow className="border-border/50 hover:bg-transparent">
-                          <TableHead className="w-16 text-center font-semibold">
-                            Rank
-                          </TableHead>
-                          <TableHead className="font-semibold">Group</TableHead>
-                          <TableHead className="font-semibold">Players</TableHead>
-                          <TableHead className="text-right font-semibold">
-                            Average Score
-                          </TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {groupLeaderboard.map((group, index) => (
-                          <TableRow
-                            key={group.groupName}
-                            className="border-border/30 hover:bg-secondary/20 transition-colors"
-                          >
-                            <TableCell className="text-center">
-                              {index === 0 ? (
-                                <span className="text-lg">🥇</span>
-                              ) : index === 1 ? (
-                                <span className="text-lg">🥈</span>
-                              ) : index === 2 ? (
-                                <span className="text-lg">🥉</span>
-                              ) : (
-                                <span className="text-muted-foreground font-mono text-sm">
-                                  {index + 1}
-                                </span>
-                              )}
-                            </TableCell>
-                            <TableCell className="font-medium">
-                              {group.groupName}
-                            </TableCell>
-                            <TableCell>
-                              <span className="text-muted-foreground text-sm">
-                                {group.players}
-                              </span>
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <span
-                                className={`font-bold font-mono ${
-                                  index < 3 ? "text-primary" : ""
-                                }`}
-                              >
-                                {group.averageScore}
-                              </span>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                  {/* Right Column: Leaderboard Table */}
+                  <div className="lg:col-span-2 space-y-4">
+                    <Tabs defaultValue="individual" className="w-full">
+                      <div className="flex justify-between items-center mb-4">
+                        <TabsList className="grid w-[320px] grid-cols-2">
+                          <TabsTrigger value="individual" className="text-xs">Individual Ranking</TabsTrigger>
+                          <TabsTrigger value="group" className="text-xs">Group Averages</TabsTrigger>
+                        </TabsList>
+                      </div>
+
+                      <TabsContent value="individual" className="mt-0">
+                        <div className="rounded-xl border border-border/50 overflow-hidden">
+                          <Table>
+                            <TableHeader>
+                              <TableRow className="border-border/50 hover:bg-transparent">
+                                <TableHead className="w-14 text-center font-semibold">Rank</TableHead>
+                                <TableHead className="font-semibold">Name</TableHead>
+                                <TableHead className="font-semibold">Group</TableHead>
+                                <TableHead className="font-semibold">Leadership Profile</TableHead>
+                                <TableHead className="font-semibold">Submitted</TableHead>
+                                <TableHead className="font-semibold">Time Taken</TableHead>
+                                <TableHead className="text-right font-semibold">Score</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {filteredSubmissions.map((sub, index) => {
+                                const timeStr = new Date(sub.submittedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                const mins = Math.floor((sub.timeTakenSeconds || 0) / 60);
+                                const secs = (sub.timeTakenSeconds || 0) % 60;
+                                const durationStr = sub.timeTakenSeconds ? `${mins}m ${secs}s` : "N/A";
+                                const archetype = getLeadershipArchetype(sub.totalScore);
+
+                                return (
+                                  <TableRow
+                                    key={sub.id}
+                                    className="border-border/30 hover:bg-secondary/20 transition-colors"
+                                  >
+                                    <TableCell className="text-center">
+                                      {index === 0 ? (
+                                        <span className="text-lg">🥇</span>
+                                      ) : index === 1 ? (
+                                        <span className="text-lg">🥈</span>
+                                      ) : index === 2 ? (
+                                        <span className="text-lg">🥉</span>
+                                      ) : (
+                                        <span className="text-muted-foreground font-mono text-sm">
+                                          {index + 1}
+                                        </span>
+                                      )}
+                                    </TableCell>
+                                    <TableCell className="font-medium">{sub.playerName}</TableCell>
+                                    <TableCell>
+                                      <Badge variant="secondary" className="text-xs">{sub.groupName}</Badge>
+                                    </TableCell>
+                                    <TableCell>
+                                      <Badge variant="outline" className={`text-[10px] font-bold py-0.5 px-2 tracking-wide uppercase ${archetype.colorClass}`}>
+                                        {archetype.title}
+                                      </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-muted-foreground text-sm">{timeStr}</TableCell>
+                                    <TableCell className="text-muted-foreground text-sm">{durationStr}</TableCell>
+                                    <TableCell className="text-right">
+                                      <span className={`font-bold font-mono ${index < 3 ? "text-primary" : ""}`}>
+                                        {sub.totalScore}
+                                      </span>
+                                    </TableCell>
+                                  </TableRow>
+                                );
+                              })}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      </TabsContent>
+
+                      <TabsContent value="group" className="mt-0">
+                        <div className="rounded-xl border border-border/50 overflow-hidden">
+                          <Table>
+                            <TableHeader>
+                              <TableRow className="border-border/50 hover:bg-transparent">
+                                <TableHead className="w-16 text-center font-semibold">Rank</TableHead>
+                                <TableHead className="font-semibold">Group</TableHead>
+                                <TableHead className="font-semibold">Players</TableHead>
+                                <TableHead className="text-right font-semibold">Average Score</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {groupLeaderboard.map((group, index) => (
+                                <TableRow
+                                  key={group.groupName}
+                                  className="border-border/30 hover:bg-secondary/20 transition-colors"
+                                >
+                                  <TableCell className="text-center">
+                                    {index === 0 ? (
+                                      <span className="text-lg">🥇</span>
+                                    ) : index === 1 ? (
+                                      <span className="text-lg">🥈</span>
+                                    ) : index === 2 ? (
+                                      <span className="text-lg">🥉</span>
+                                    ) : (
+                                      <span className="text-muted-foreground font-mono text-sm">
+                                        {index + 1}
+                                      </span>
+                                    )}
+                                  </TableCell>
+                                  <TableCell className="font-medium">{group.groupName}</TableCell>
+                                  <TableCell>
+                                    <span className="text-muted-foreground text-sm">{group.players}</span>
+                                  </TableCell>
+                                  <TableCell className="text-right">
+                                    <span className={`font-bold font-mono ${index < 3 ? "text-primary" : ""}`}>
+                                      {group.averageScore}
+                                    </span>
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      </TabsContent>
+                    </Tabs>
                   </div>
-                </TabsContent>
-              </Tabs>
-            )}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
