@@ -29,9 +29,19 @@ export default function OnboardingPage() {
   const [groupName, setGroupName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [quote, setQuote] = useState({ text: "", author: "" });
 
   useEffect(() => {
     setMounted(true);
+    
+    const quotes = [
+      { text: "Leadership is not about being in charge. It is about taking care of those in our charge.", author: "Simon Sinek" },
+      { text: "A leader is best when people barely know he exists... when his work is done, they will say: we did it ourselves.", author: "Lao Tzu" },
+      { text: "The supreme quality for leadership is unquestionably integrity. Without it, no real success is possible.", author: "Dwight D. Eisenhower" },
+      { text: "Management is doing things right; leadership is doing the right things.", author: "Peter Drucker" }
+    ];
+    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+    setQuote(randomQuote);
   }, []);
 
   // Auto-redirect if game is already in progress
@@ -96,7 +106,7 @@ export default function OnboardingPage() {
               <Input
                 id="playerName"
                 type="text"
-                placeholder="e.g. Commander Alex Mercer"
+                placeholder="e.g. Alex Mercer"
                 value={playerName}
                 onChange={(e) => setPlayerName(e.target.value)}
                 maxLength={100}
@@ -157,25 +167,17 @@ export default function OnboardingPage() {
             </Button>
           </form>
 
-          {/* Feature Quick list */}
-          <div className="mt-8 pt-6 border-t border-border/30 grid grid-cols-3 gap-2 text-center text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
-            <div className="flex flex-col items-center">
-              <span className="text-primary text-sm mb-0.5">06</span>
-              Rounds
+          {/* Inspirational Quote display */}
+          {quote.text && (
+            <div className="mt-8 pt-6 border-t border-border/30 text-center lq-fade-in">
+              <p className="text-xs text-muted-foreground/70 italic leading-relaxed max-w-xs mx-auto">
+                &ldquo;{quote.text}&rdquo;
+              </p>
+              <p className="text-[10px] text-primary font-bold uppercase tracking-wider mt-2">
+                — {quote.author}
+              </p>
             </div>
-            <div className="flex flex-col items-center border-x border-border/20">
-              <span className="text-chart-2 text-sm mb-0.5">15m</span>
-              Global Time
-            </div>
-            <div className="flex flex-col items-center">
-              <span className="text-cyan text-sm mb-0.5">Path</span>
-              Animation
-            </div>
-          </div>
-
-          <p className="text-center text-[10px] text-muted-foreground/40 mt-6">
-            Session saved locally. Safe to refresh during gameplay.
-          </p>
+          )}
         </CardContent>
       </Card>
     </main>
