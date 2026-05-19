@@ -46,7 +46,9 @@ export default function PlayPage() {
   // Path visualization states
   const [pathStep, setPathStep] = useState(0); // 1 to 6 represent active step, 7 = animation complete
   const [hasSeenPath, setHasSeenPath] = useState(false);
+  const [skipButtonAvailable, setSkipButtonAvailable] = useState(false);
   const animationTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const skipTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -107,6 +109,7 @@ export default function PlayPage() {
   useEffect(() => {
     if (mounted && isSubmitted && !hasSeenPath) {
       setPathStep(1);
+      setSkipButtonAvailable(false);
       
       const advancePath = () => {
         setPathStep((prev) => {
@@ -119,10 +122,16 @@ export default function PlayPage() {
       };
 
       animationTimerRef.current = setInterval(advancePath, 3000); // 3s per step to let users read their choice
+      
+      // Enable skip button after 5 seconds
+      skipTimerRef.current = setTimeout(() => {
+        setSkipButtonAvailable(true);
+      }, 5000);
     }
 
     return () => {
       if (animationTimerRef.current) clearInterval(animationTimerRef.current);
+      if (skipTimerRef.current) clearTimeout(skipTimerRef.current);
     };
   }, [mounted, isSubmitted, hasSeenPath]);
 
@@ -285,9 +294,10 @@ export default function PlayPage() {
             <Button
               variant="outline"
               onClick={() => setPathStep(7)}
-              className="flex-1 h-12 text-xs uppercase tracking-wider font-semibold border-border/40 hover:bg-secondary/20 cursor-pointer"
+              disabled={!skipButtonAvailable}
+              className="flex-1 h-12 text-xs uppercase tracking-wider font-semibold border-border/40 hover:bg-secondary/20 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Skip Walkthrough
+              {skipButtonAvailable ? "Skip Walkthrough" : "Skip in 5s..."}
             </Button>
           )}
           <Button
@@ -433,7 +443,7 @@ export default function PlayPage() {
               <div className="flex items-center gap-3">
                 {getArchetypeIcon(archetype.icon)}
                 <h2 className={`text-3xl font-heading font-black tracking-wide ${archetype.textClass}`}>
-                  {playerName}: {archetype.title}
+                  {archetype.title}
                 </h2>
               </div>
               
